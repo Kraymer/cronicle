@@ -14,8 +14,7 @@ Originally, `cronicle` has been conceived as a solution to this particular [serv
 
 ### `crontab` example
 
-    # Backup a postgres database keeping 7 daily backups,
-    # 4 weekly and 12 monthly.
+    # Backup a postgres database keeping 7 daily backups, 4 weekly and 12 monthly
     @daily pg_dump -Fc mydb > mydb-`date +%F`.dump.bin
     @daily cronicle mydb-`date +%F`.dump.bin /home/bob/backups/ DAILY 7
     @weekly cronicle mydb-`date +%F`.dump.bin /home/bob/backups/ WEEKLY 4
