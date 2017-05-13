@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Copyright (c) 2017 Fabrice Laporte - kray.me
