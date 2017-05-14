@@ -12,13 +12,21 @@ Originally, `cronicle` has been conceived as a solution to this particular [serv
 - **files rotation:** keep the N most recent versions of a file
 - **space efficient:** use symlinks in target directories to store a single occurence of each file instead of performing copies
 
+### Usage
+
+    cronicle FILE_NAME DEST_DIR NUM_ARCHIVES
+    
+    Add a symlink to FILE_NAME in DEST_DIR, keep last NUM_ARCHIVES links in DEST_DIR.
+    When removing a link, remove the underlying file if no other link point to it.
+    
+
 ### `crontab` example
 
     # Backup a postgres database keeping 7 daily backups, 4 weekly and 12 monthly
-    @daily pg_dump -Fc mydb > mydb-`date +%F`.dump.bin
-    @daily cronicle mydb-`date +%F`.dump.bin /home/bob/backups/ DAILY 7
-    @weekly cronicle mydb-`date +%F`.dump.bin /home/bob/backups/ WEEKLY 4
-    @monthly cronicle mydb-`date +%F`.dump.bin /home/bob/backups/ MONTHLY 12
+    @daily pg_dump -Fc mydb > /home/bob/backups/mydb-`date +%F`.dump.bin
+    @daily cronicle /home/bob/backups/mydb-`date +%F`.dump.bin DAILY 7
+    @weekly cronicle /home/bob/backups/mydb-`date +%F`.dump.bin WEEKLY 4
+    @monthly cronicle /home/bob/backups/mydb-`date +%F`.dump.bin MONTHLY 12
 
 
 
