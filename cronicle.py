@@ -1,3 +1,4 @@
+import click
 import glob
 import os
 from dateutil.parser import parse as date_parse
@@ -9,23 +10,26 @@ def get_diff(basename, candidate):
     """
     start = end = None
     for idx, _ in enumerate(candidate):
-        if not start and candidate[idx] != basename[idx]:
-            start = idx
-        if not end and candidate[-1 - idx] != basename[-1 - idx]:
-            end = 0 - idx
+        try:
+            if not start and candidate[idx] != basename[idx]:
+                start = idx
+            if not end and candidate[-1 - idx] != basename[-1 - idx]:
+                end = 0 - idx
+        except IndexError:
+            return
     return candidate[start:end]
 
 
-def find_archives(filename):
+def find_archives(filename, target_dir):
     """
     Return archives of filename.
-    An archive is a file located in same directory as filename and whose the diff with filename
-    consists in a date or a number.
+    An archive is a file located in target_dir and that is named same as filename except for a date
+    or numbering section.
     """
     archives = []
-    folder, basename = os.path.split(filename)
-    print('%s/*%s' % (folder, os.path.splitext(filename)[1]))
-        glob.glob('%s/*%s' % (folder, os.path.splitext(filename)[1]))]
+    _, basename = os.path.split(filename)
+    candidates = [os.path.basename(x) for x in
+        glob.glob('%s/*%s' % (target_dir, os.path.splitext(filename)[1]))]
     for candidate in candidates:
         diff = get_diff(basename, candidate)
         try:
@@ -36,23 +40,33 @@ def find_archives(filename):
     return archives
 
 
-# @click.argument('pattern', type=click.Path(exists=True), metavar='FILE')
-# @click.argument('target_dir', type=click.Path(exists=True), metavar='DIR')
-# @click.argument('num_archives', type=int, metavar='NUM_ARCHIVES')
-# def cronicle_cli(pattern, target_dir, num_archives=3):
-#     last_instance = glob(pattern).last()
-#     cd target_dir
-#     if not last_instance:
-#         ln -symlink
-#     archives = find_archives(pattern)
-#     if len(archives) > NUM_ARCHIVES:
-#         for archive in archives[NUM_ARCHIVES:]:
-#             cd(dir(pattern))
-#             links = find -L . -samefile ${OUTDATED_FILES[$i]} | wc -l | xargs
-#             if no links:
-#                 delete
-#             else:
-#                 unlink
+def prune_dir(_dir, filename, max_files):
+    """Prune directory to keep only the max_files most recent archives.
+    """
+    archives = find_archives(filename, _dir)
+    print(archives)
+
+
+
+@click.argument('filename', type=click.Path(exists=True), metavar='FILE')
+@click.argument('target_dir', type=click.Path(exists=True), metavar='DIR')
+@click.argument('num_archives', type=int, metavar='NUM_ARCHIVES')
+def cronicle_cli(filename, target_dir, num_archives=3):
+    # cd target_dir
+    # if not last_instance:
+    #     ln -symlink
+    os.chdir(target_dir)
+    os.symlink(filename, filename.basename())
+    prune_dir(target_dir, filename, num_archives)
+
+    # if len(archives) > NUM_ARCHIVES:
+    #     for archive in archives[NUM_ARCHIVES:]:
+    #         cd(dir(pattern))
+    #         links = find -L . -samefile ${OUTDATED_FILES[$i]} | wc -l | xargs
+    #         if no links:
+    #             delete
+    #         else:
+    #             unlink
 
 # if __name__ == "__main__":
 #     print("""
