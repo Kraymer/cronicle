@@ -119,12 +119,12 @@ def find_config(filename, cfg=None):
 
 @click.command(context_settings=dict(help_option_names=['-h', '--help']),
                help=('Keep rotated time-spaced archives of a file. FILE name must match one of '
-                     ' pattern present in %s' % CONFIG_PATH),
+                     ' the patterns present in %s.' % CONFIG_PATH),
                epilog=('See https://github.com/Kraymer/cronicle/blob/master/README.md#usage for '
-                       ' more infos'))
+                       ' more infos.'))
 @click.argument('filename', type=click.Path(exists=True), metavar='FILE')
 @click.option('-d', '--dry-run', count=True,
-              help=('just print instead of writing on filesystem'))
+              help=('Just print instead of writing on filesystem.'))
 @click.option('-v', '--verbose', count=True)
 @click.version_option(__version__)
 def cronicle_cli(filename, dry_run, verbose):
