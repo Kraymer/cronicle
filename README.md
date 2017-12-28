@@ -1,10 +1,10 @@
 ## cronicle
 
-> /ˈkɹɒnɪkəl/
->     1. *n.* a factual written account of important events in the order of their occurrence
+> /ˈkɹɒnɪkəl/  
+>     1. *n.* a factual written account of important events in the order of their occurrence  
 >     2. *n.* software to archive the *N* most recent backups of a file in a folder named after the job frequency. Recommended use is to trigger it via a cron job.
 
-Originally, `cronicle` has been conceived as a solution to this particular [serverfault](https://serverfault.com) question :   [How to keep: daily backups for a week, weekly for a month, monthly for a year, and yearly after that](https://serverfault.com/questions/575163/how-to-keep-daily-backups-for-a-week-weekly-for-a-month-monthly-for-a-year-a)
+**Originally, `cronicle` has been conceived as a solution to this particular [serverfault](https://serverfault.com) question :   [How to keep: daily backups for a week, weekly for a month, monthly for a year, and yearly after that](https://serverfault.com/questions/575163/how-to-keep-daily-backups-for-a-week-weekly-for-a-month-monthly-for-a-year-a)**
 
 ### Features
 
@@ -28,11 +28,11 @@ Originally, `cronicle` has been conceived as a solution to this particular [serv
 
 In order to manage a file backups with cronicle, you must have a section
 in the `config.yaml` that matches the backups names.
-Under it, you can then define values for the four kinds of periodic archives : `daily`, 'weekly', 'monthly', 'yearly'.
+Under it, you can then define values for the four kinds of periodic archives : `daily`, `weekly`, `monthly`, `yearly`.
 
 ### Example
 
-If you have dumps of a database in your `$HOME` directory named like `mydb-20170101.dump`, `mydb-20170102.dump, and want to keep each dump for 7 days ; a working `config.yaml` content would be ::
+If you have dumps of a database in your `$HOME` directory named like `mydb-20170101.dump`, `mydb-20170102.dump`, and want to keep each dump for 7 days ; a working `config.yaml` content would be :
 
     /home/johndoe/mydb-*.dump:
         daily: 7
@@ -40,7 +40,7 @@ If you have dumps of a database in your `$HOME` directory named like `mydb-20170
 
 ### `cron` triggering
 
-For a no-brainer use, I recommend to run cronicle via cron, just after the command in charge of performing the backup. A `crontab` example ::
+For a no-brainer use, I recommend to run cronicle via cron, just after the command in charge of performing the backup. A `crontab` example :
 
     @daily pg_dump -Fc mydb > /home/bob/backups/mydb-`date +%F`.dump
     @daily cronicle /home/bob/backups/mydb-`date +%F`.dump
