@@ -19,7 +19,8 @@ DELTA_DAYS = {
     'WEEKLY': 7,
     'MONTHLY': 30,
     'YEARLY': 365,
-    }
+}
+CONFIG_PATH = os.path.join(config.config_dir(), 'config.yaml')
 
 
 def set_logging(verbose=False):
@@ -101,7 +102,7 @@ def find_config(filename, cfg=None):
     """Return the config matched by filename or the default one.
     """
     res = {'daily': 0, 'weekly': 0, 'monthly': 0, 'yearly': 0,
-        'pattern': '*'}
+           'pattern': '*'}
     dirname, basename = os.path.split(filename)
 
     if not cfg:
@@ -117,20 +118,23 @@ def find_config(filename, cfg=None):
 
 
 @click.command(context_settings=dict(help_option_names=['-h', '--help']),
-               help='Keep rotated time-spaced archives of a file.',
-               epilog='')
+               help=('Keep rotated time-spaced archives of a file. FILE name must match one of '
+                     ' pattern present in %s' % CONFIG_PATH),
+               epilog=('See https://github.com/Kraymer/cronicle/blob/master/README.md#usage for '
+                       ' more infos'))
 @click.argument('filename', type=click.Path(exists=True), metavar='FILE')
 @click.option('-d', '--dry-run', count=True,
-    help=('just print instead of writing on filesystem'))
+              help=('just print instead of writing on filesystem'))
 @click.option('-v', '--verbose', count=True)
 @click.version_option(__version__)
 def cronicle_cli(filename, dry_run, verbose):
+    """Blah bla plop"""
     set_logging(max(verbose, dry_run))
     filename = os.path.abspath(filename)
     cfg = find_config(filename)
     if not cfg:
         logger.error('No pattern found in %s that matches %s.' % (
-            os.path.join(config.config_dir(), 'config.yaml'), filename))
+            CONFIG_PATH, filename))
         exit(1)
 
     for period in DELTA_DAYS.keys():
