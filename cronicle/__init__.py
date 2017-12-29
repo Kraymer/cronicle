@@ -14,7 +14,8 @@ __author__ = 'Fabrice Laporte <kraymer@gmail.com>'
 __version__ = '0.1.0'
 logger = logging.getLogger(__name__)
 
-DELTA_DAYS = {
+# Names of frequency folders that will host symlinks, and minimum number of days between 2 archives
+FREQUENCY_FOLDER_DAYS = {
     'DAILY': 1,
     'WEEKLY': 7,
     'MONTHLY': 30,
@@ -38,25 +39,27 @@ def get_symlinks_dates(folder, pattern='*'):
     """Return OrderedDict of symlinks sorted by creation dates (used as keys).
     """
     creation_dates = {}
-    for x in glob.glob(os.path.join(os.getcwd(), folder, pattern)):  # join with current dir
+    abs_pattern = os.path.join(folder, pattern)
+    logger.debug('Scanning %s for symlinks' % abs_pattern)
+    for x in glob.glob(abs_pattern):
         if os.path.islink(x):
             creation_dates[datetime.fromtimestamp(os.lstat(x).st_birthtime)] = x
     res = OrderedDict(sorted(creation_dates.items()))
     return res
 
 
-def delta_days(folder):
-    """Return nb of elapsed days since last archive in given periodic folder.
-       period: one of 'daily', 'weekly', 'monthly', 'yearly'
+def delta_days(folder, cfg):
+    """Return nb of elapsed days since last archive in given folder.
     """
-    files_dates = get_symlinks_dates(folder)
+    files_dates = get_symlinks_dates(folder, cfg['pattern'])
     if files_dates:
         last_file_date = files_dates.keys()[-1]
-        res = relativedelta(datetime.now(), last_file_date)
-        return res.days
+        return relativedelta(datetime.now(), last_file_date).days
 
 
 def symlink(filename, target, dry_run):
+    """Wrapper around os.symlink that handles dry_run argument.
+    """
     logger.info('Symlinking %s => %s' % (target, filename))
     if dry_run:
         return
@@ -67,35 +70,66 @@ def symlink(filename, target, dry_run):
 
 
 def unlink(link, dry_run):
+    """Wrapper around os.unlink that handles dry_run argument.
+    """
     if dry_run:
         logger.info('Unlinking %s' % link)
         return
     else:
-        os.unlink(link)
+        os.unlink(link, dry_run)
 
 
-def timed_symlink(filename, folder, cfg, dry_run):
-    """Create daily, ..., yearly symlinks for filename if enough days elapsed since last archive.
+def remove(filename, dry_run):
+    """Wrapper around os.remove that handles dry_run argument.
     """
-    days_elapsed = delta_days(folder)
-    if (days_elapsed is not None) and days_elapsed < DELTA_DAYS[folder]:
-        logger.info('Too short delay since last archive')
+    if dry_run:
+        logger.info('Removing %s' % filename)
         return
-    target_dir = os.path.join(os.path.dirname(filename), folder)
-    target = os.path.abspath(os.path.join(target_dir, os.path.basename(filename)))
+    else:
+        os.remove(filename)
+
+
+def timed_symlink(filename, ffolder, cfg, dry_run):
+    """Create symlinks for filename in ffolder if enough days elapsed since last archive.
+    """
+    target_dir = os.path.abspath(os.path.join(os.path.dirname(filename), ffolder))
+    days_elapsed = delta_days(target_dir, cfg)
+    if (days_elapsed is not None) and days_elapsed < FREQUENCY_FOLDER_DAYS[ffolder]:
+        logger.info('No symlink created : too short delay since last archive')
+        return
+    target = os.path.join(target_dir, os.path.basename(filename))
 
     if not os.path.lexists(target):
-        symlink(filename, target)
+        symlink(filename, target, dry_run)
     else:
         logger.error('%s already exists' % target)
 
 
-def rotate(filename, folder, cfg, dry_run=False):
+def rotate(filename, ffolder, cfg, _remove, dry_run=False):
     """Keep only the n last links of folder that matches same pattern than filename.
     """
-    links = get_symlinks_dates(folder, cfg['pattern']).values()[::-1]
-    for link in links[cfg[folder.lower()]:]:  # sort newest -> oldest
-        unlink(link)
+    others_ffolders = set(FREQUENCY_FOLDER_DAYS.keys()) - set([ffolder])
+    target_dir = os.path.abspath(os.path.join(os.path.dirname(filename), ffolder))
+    links = get_symlinks_dates(target_dir, cfg['pattern']).values()[::-1]  # sort newest -> oldest
+    numskips = cfg[ffolder.lower()]
+    logger.debug('Keep %s' % (links[:numskips]))
+    droplinks = links[numskips:]
+    for link in droplinks:
+        filepath = os.path.realpath(link)
+        unlink(link, dry_run)
+        if _remove and not is_symlinked(filepath, others_ffolders):
+            remove(filepath, dry_run)
+
+
+def is_symlinked(filepath, folders):
+    """Return True if filepath has symlinks pointing to it in given folders.
+    """
+    dirname, basename = os.path.split(filepath)
+    for folder in folders:
+        target = os.path.abspath(os.path.join(dirname, folder, basename))
+        if os.path.lexists(target):
+            return True
+    return False
 
 
 def find_config(filename, cfg=None):
@@ -122,6 +156,8 @@ def find_config(filename, cfg=None):
                epilog=('See https://github.com/Kraymer/cronicle/blob/master/README.md#usage for '
                        'more infos.'))
 @click.argument('filename', type=click.Path(exists=True), metavar='FILE')
+@click.option('-r', '--remove', help='Remove previous file backup when no symlink points to it.',
+    default=False, is_flag=True)
 @click.option('-d', '--dry-run', count=True,
               help='Just print instead of writing on filesystem.')
 @click.option('-v', '--verbose', count=True)
@@ -136,10 +172,10 @@ def cronicle_cli(filename, remove, dry_run, verbose):
             CONFIG_PATH, filename))
         exit(1)
 
-    for period in DELTA_DAYS.keys():
-        if cfg[period.lower()]:
-            timed_symlink(filename, period, cfg, dry_run)
-            rotate(filename, period, cfg, dry_run)
+    for ffolder in FREQUENCY_FOLDER_DAYS.keys():
+        if cfg[ffolder.lower()]:
+            timed_symlink(filename, ffolder, cfg, dry_run)
+            rotate(filename, ffolder, cfg, remove, dry_run)
 
 
 if __name__ == "__main__":
