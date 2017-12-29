@@ -1,3 +1,7 @@
+[![nopypi travis](https://travis-ci.org/Kraymer/cronicle.svg?branch=master)](https://travis-ci.org/Kraymer/cronicle)
+[![nopypi pypi](http://img.shields.io/pypi/v/cronicle.svg)](https://pypi.python.org/pypi/cronicle)
+[![nopypi rss](https://img.shields.io/badge/rss-subscribe-orange.svg)](https://github.com/Kraymer/cronicle/releases.atom)
+
 ## cronicle
 
 > /ˈkɹɒnɪkəl/  
