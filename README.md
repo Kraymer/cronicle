@@ -16,7 +16,8 @@
 
     Usage: cronicle.py [OPTIONS] FILE
 
-      Keep rotated time-spaced archives of a file. FILE name must match one of the patterns present in /Users/flap/.config/cronicle/config.yaml.
+      Keep rotated time-spaced archives of a file. 
+      FILE name must match one of the patterns present in /Users/flap/.config/cronicle/config.yaml.
 
     Options:
       -r, --remove   Remove previous file backup when no symlink points to it.
