@@ -101,8 +101,7 @@ def rotate(filename, folder, cfg, dry_run=False):
 def find_config(filename, cfg=None):
     """Return the config matched by filename or the default one.
     """
-    res = {'daily': 0, 'weekly': 0, 'monthly': 0, 'yearly': 0,
-           'pattern': '*'}
+    res = {'daily': 0, 'weekly': 0, 'monthly': 0, 'yearly': 0, 'pattern': '*'}
     dirname, basename = os.path.split(filename)
 
     if not cfg:
@@ -121,17 +120,17 @@ def find_config(filename, cfg=None):
                help=('Keep rotated time-spaced archives of a file. FILE name must match one of '
                      ' the patterns present in %s.' % CONFIG_PATH),
                epilog=('See https://github.com/Kraymer/cronicle/blob/master/README.md#usage for '
-                       ' more infos.'))
+                       'more infos.'))
 @click.argument('filename', type=click.Path(exists=True), metavar='FILE')
 @click.option('-d', '--dry-run', count=True,
-              help=('Just print instead of writing on filesystem.'))
+              help='Just print instead of writing on filesystem.')
 @click.option('-v', '--verbose', count=True)
 @click.version_option(__version__)
-def cronicle_cli(filename, dry_run, verbose):
-    """Blah bla plop"""
+def cronicle_cli(filename, remove, dry_run, verbose):
     set_logging(max(verbose, dry_run))
     filename = os.path.abspath(filename)
     cfg = find_config(filename)
+    logger.debug('Config is %s' % cfg)
     if not cfg:
         logger.error('No pattern found in %s that matches %s.' % (
             CONFIG_PATH, filename))
