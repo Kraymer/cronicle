@@ -33,7 +33,7 @@ Under it, you can then define values for the four kinds of periodic archives : `
 
 ### Example
 
-If you have dumps of a database in a `~/dumps` directory named like `mydb-20170101.dump`, `mydb-20170102.dump, and want to keep each dump for 7 days plus go back up to two months ; a working `config.yaml` content would be ::
+If you have dumps of a database in a `~/dumps` directory named like `mydb-20170101.dump`, `mydb-20170102.dump`, and want to keep each dump for 7 days plus go back up to two months ; a working `config.yaml` content would be ::
 
     /home/johndoe/dumps/mydb-*.dump:
         daily: 7
