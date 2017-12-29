@@ -41,7 +41,10 @@ def coerce_file(fn):
                                                 stdout=subprocess.PIPE).communicate()
             except:
                 pass
-    return text.decode('utf-8')
+    try:
+        return text.decode('utf-8')
+    except AttributeError:
+        return text
 
 
 setup(name='cronicle',

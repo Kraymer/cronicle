@@ -53,7 +53,7 @@ def delta_days(folder, cfg):
     """
     files_dates = get_symlinks_dates(folder, cfg['pattern'])
     if files_dates:
-        last_file_date = files_dates.keys()[-1]
+        last_file_date = list(files_dates.keys())[-1]
         return relativedelta(datetime.now(), last_file_date).days
 
 
@@ -110,7 +110,7 @@ def rotate(filename, ffolder, cfg, _remove, dry_run=False):
     """
     others_ffolders = set(FREQUENCY_FOLDER_DAYS.keys()) - set([ffolder])
     target_dir = os.path.abspath(os.path.join(os.path.dirname(filename), ffolder))
-    links = get_symlinks_dates(target_dir, cfg['pattern']).values()[::-1]  # sort newest -> oldest
+    links = list(get_symlinks_dates(target_dir, cfg['pattern']).values())[::-1]  # sort newest -> oldest
     numskips = cfg[ffolder.lower()]
     logger.debug('Keep %s' % (links[:numskips]))
     droplinks = links[numskips:]
