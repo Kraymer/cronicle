@@ -16,15 +16,15 @@
 
     Usage: cronicle.py [OPTIONS] FILE
 
-      Keep rotated time-spaced archives of backup files. FILE name must match one of the patterns present in /Users/johndoe/.config/cronicle/config.yaml.
+      Keep rotated time-spaced archives of a file. FILE name must match one of the patterns present in /Users/flap/.config/cronicle/config.yaml.
 
     Options:
+      -r, --remove   Remove previous file backup when no symlink points to it.
       -d, --dry-run  Just print instead of writing on filesystem.
       -v, --verbose
       --version      Show the version and exit.
       -h, --help     Show this message and exit.
 
-      See https://github.com/Kraymer/cronicle/blob/master/README.md#usage for more infos
 
 In order to manage a file backups with cronicle, you must have a section
 in the `config.yaml` that matches the backups names.
@@ -32,18 +32,22 @@ Under it, you can then define values for the four kinds of periodic archives : `
 
 ### Example
 
-If you have dumps of a database in your `$HOME` directory named like `mydb-20170101.dump`, `mydb-20170102.dump`, and want to keep each dump for 7 days ; a working `config.yaml` content would be :
+If you have dumps of a database in a `~/dumps` directory named like `mydb-20170101.dump`, `mydb-20170102.dump, and want to keep each dump for 7 days plus go back up to two months ; a working `config.yaml` content would be ::
 
-    /home/johndoe/mydb-*.dump:
+    /home/johndoe/dumps/mydb-*.dump:
         daily: 7
+        monthly: 2
 
+Next cronicle call will result in the creation of folders `DAILY` and `MONTHLY` in `/home/johndoe/dumps/`, each folder containing symlinks to the .dump files.
 
 ### `cron` triggering
 
 For a no-brainer use, I recommend to run cronicle via cron, just after the command in charge of performing the backup. A `crontab` example :
 
-    @daily pg_dump -Fc mydb > /home/bob/backups/mydb-`date +%F`.dump
-    @daily cronicle /home/bob/backups/mydb-`date +%F`.dump
+    @daily pg_dump -Fc mydb > /home/johndoe/dumps/mydb-`date +%F`.dump
+    @daily cronicle -r /home/johndoe/dumps/mydb-`date +%F`.dump
+
+If used with the `config.yaml` as defined in the previous section, this daily call to cronicle guarantees that you will keep at most 9 database dumps (7 latest daily + 2 monthly).
 
 
 
