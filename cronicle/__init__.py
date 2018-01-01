@@ -130,34 +130,35 @@ def find_config(filename, cfg=None):
 
 
 @click.command(context_settings=dict(help_option_names=['-h', '--help']),
-               help=('Keep rotated time-spaced archives of a file. FILE name must match one of '
+               help=('Keep rotated time-spaced archives of files. FILES names must match one of '
                      ' the patterns present in %s.' % CONFIG_PATH),
                epilog=('See https://github.com/Kraymer/cronicle/blob/master/README.md#usage for '
-                       'more infos.'))
-@click.argument('filename', type=click.Path(exists=True), metavar='FILE')
+                       'more inf'))
+@click.argument('filenames', type=click.Path(exists=True), metavar='FILES', nargs=-1)
 @click.option('-r', '--remove', help='Remove previous file backup when no symlink points to it.',
     default=False, is_flag=True)
 @click.option('-d', '--dry-run', count=True,
               help='Just print instead of writing on filesystem.')
 @click.option('-v', '--verbose', count=True)
 @click.version_option(__version__)
-def cronicle_cli(filename, remove, dry_run, verbose):
+def cronicle_cli(filenames, remove, dry_run, verbose):
     set_logging(max(verbose, dry_run))
     if dry_run:
         butterify(('remove', 'symlink', 'unlink'))
 
-    filename = path.abspath(filename)
-    cfg = find_config(filename)
-    logger.debug('Config is %s' % cfg)
+    for filename in filenames:
+        filename = path.abspath(filename)
+        cfg = find_config(filename)
+        logger.debug('Config is %s' % cfg)
 
-    if not cfg:
-        logger.error('No pattern found in %s that matches %s.' % (
-            CONFIG_PATH, filename))
-        exit(1)
+        if not cfg:
+            logger.error('No pattern found in %s that matches %s.' % (
+                CONFIG_PATH, filename))
+            exit(1)
 
-    for ffolder in FREQUENCY_FOLDER_DAYS.keys():
-        if cfg[ffolder.lower()]:
-            timed_symlink(filename, ffolder, cfg) and rotate(filename, ffolder, remove, cfg)
+        for ffolder in FREQUENCY_FOLDER_DAYS.keys():
+            if cfg[ffolder.lower()]:
+                timed_symlink(filename, ffolder, cfg) and rotate(filename, ffolder, remove, cfg)
 
 
 if __name__ == "__main__":
