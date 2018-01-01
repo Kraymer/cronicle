@@ -28,11 +28,7 @@ def set_logging(verbose=False):
     """Set logging level based on verbose flag.
     """
     levels = {0: logging.WARNING, 1: logging.INFO, 2: logging.DEBUG}
-    logger.setLevel(levels[verbose])
-    ch = logging.StreamHandler()
-    ch.setLevel(levels[verbose])
-    ch.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
-    logger.addHandler(ch)
+    logging.basicConfig(level=levels[verbose], format='%(levelname)s: %(message)s')
 
 
 def get_symlinks_dates(folder, pattern='*'):
