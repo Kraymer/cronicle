@@ -1,3 +1,4 @@
 test/rsrc/foobar*
 test/rsrc/DAILY/*
 test/rsrc/MONTHLY/*
+__pycache__
