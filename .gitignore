@@ -1,5 +1,10 @@
+__pycache__
+.tox/
+*.pyc
 bin/
+cronicle.egg-info/
+lib/
+include/
 test/rsrc/foobar*
 test/rsrc/DAILY/*
 test/rsrc/MONTHLY/*
-__pycache__
