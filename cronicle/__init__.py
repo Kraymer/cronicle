@@ -4,7 +4,6 @@ import logging
 
 from collections import OrderedDict
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from os import (lstat, makedirs, path, remove, symlink, unlink)
 
 from .config import config
@@ -43,6 +42,16 @@ def butterify(functions):
     globals().update({func: _butterify(func) for func in functions})
 
 
+def file_creation_day(filepath):
+    """Return file creation date with a daily precision.
+    """
+    try:
+        filedate = lstat(path.realpath(filepath)).st_birthtime
+    except AttributeError:
+        filedate = lstat(path.realpath(filepath)).st_mtime
+    return datetime.fromtimestamp(filedate).replace(hour=0, minute=0, second=0, microsecond=0)
+
+
 def get_symlinks_dates(folder, pattern='*'):
     """Return OrderedDict of symlinks sorted by creation dates (used as keys).
     """
@@ -51,18 +60,18 @@ def get_symlinks_dates(folder, pattern='*'):
     logger.debug('Scanning %s for symlinks' % abs_pattern)
     for x in glob.glob(abs_pattern):
         if path.islink(x):
-            creation_dates[datetime.fromtimestamp(lstat(x).st_birthtime)] = x
+            creation_dates[file_creation_day(x)] = x
     res = OrderedDict(sorted(creation_dates.items()))
     return res
 
 
-def delta_days(folder, cfg):
+def delta_days(filename, folder, cfg):
     """Return nb of elapsed days since last archive in given folder.
     """
     files_dates = get_symlinks_dates(folder, cfg['pattern'])
     if files_dates:
         last_file_date = list(files_dates.keys())[-1]
-        return relativedelta(datetime.now(), last_file_date).days
+        return (file_creation_day(filename) - last_file_date).days
 
 
 def timed_symlink(filename, ffolder, cfg):
@@ -70,7 +79,7 @@ def timed_symlink(filename, ffolder, cfg):
        Return True if symlink created.
     """
     target_dir = path.abspath(path.join(path.dirname(filename), ffolder))
-    days_elapsed = delta_days(target_dir, cfg)
+    days_elapsed = delta_days(filename, target_dir, cfg)
     if (days_elapsed is not None) and days_elapsed < FREQUENCY_FOLDER_DAYS[ffolder]:
         logger.info('No symlink created : too short delay since last archive')
         return
