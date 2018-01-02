@@ -2,9 +2,11 @@ language: python
 
 env:
   - TOX_ENV=py27
-  - TOX_ENV=py34
 
+
+# To install dependencies, tell tox to do everything but actually running the test.
 install:
- - pip install tox
+    - travis_retry pip install -r requirements.txt
+    - travis_retry tox -e $TOX_ENV --notest
 
 script: tox -e $TOX_ENV
