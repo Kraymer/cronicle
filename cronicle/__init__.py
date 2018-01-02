@@ -30,18 +30,6 @@ def set_logging(verbose=False):
     logging.basicConfig(level=levels[verbose], format='%(levelname)s: %(message)s')
 
 
-def butterify(functions):
-    """Replace functions in global scope by debug functions that print their name and arguments.
-       pour du beurre: idiom. for nothing, without effect
-    """
-    def _butterify(func):
-        def beurre(*arg):
-            logger.info("Calling '%s' with %s" % (func, list(arg)))
-        return beurre
-
-    globals().update({func: _butterify(func) for func in functions})
-
-
 def file_creation_day(filepath):
     """Return file creation date with a daily precision.
     """
@@ -88,7 +76,7 @@ def timed_symlink(filename, ffolder, cfg):
     if not path.lexists(target):
         if not path.exists(target_dir):
             makedirs(target_dir)
-        logger.debug('Creating symlink %s' % target)
+        logger.info('Creating symlink %s' % target)
         symlink(filename, target)
     else:
         logger.error('%s already exists' % target)
@@ -145,7 +133,7 @@ def find_config(filename, cfg=None):
                help=('Keep rotated time-spaced archives of files. FILES names must match one of '
                      ' the patterns present in %s.' % CONFIG_PATH),
                epilog=('See https://github.com/Kraymer/cronicle/blob/master/README.md#usage for '
-                       'more inf'))
+                       'more infos'))
 @click.argument('filenames', type=click.Path(exists=True), metavar='FILES', nargs=-1)
 @click.option('-r', '--remove', help='Remove previous file backup when no symlink points to it.',
     default=False, is_flag=True)
@@ -156,7 +144,7 @@ def find_config(filename, cfg=None):
 def cronicle_cli(filenames, remove, dry_run, verbose):
     set_logging(max(verbose, dry_run))
     if dry_run:
-        butterify(('remove', 'symlink', 'unlink'))
+        globals().update({func: lambda *x: None for func in ('remove', 'symlink', 'unlink')})
 
     for filename in filenames:
         filename = path.abspath(filename)
