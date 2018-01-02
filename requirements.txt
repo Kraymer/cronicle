@@ -1,5 +1,6 @@
 click
 ordereddict
-tox
 pyyaml
 six
+tox
+python-dateutil
