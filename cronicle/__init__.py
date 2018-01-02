@@ -56,7 +56,7 @@ def get_symlinks_dates(folder, pattern='*'):
     """Return OrderedDict of symlinks sorted by creation dates (used as keys).
     """
     creation_dates = {}
-    abs_pattern = path.join(folder, pattern)
+    abs_pattern = path.join(folder, path.basename(pattern))
     logger.debug('Scanning %s for symlinks' % abs_pattern)
     for x in glob.glob(abs_pattern):
         if path.islink(x):
