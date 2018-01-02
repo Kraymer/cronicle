@@ -88,6 +88,7 @@ def timed_symlink(filename, ffolder, cfg):
     if not path.lexists(target):
         if not path.exists(target_dir):
             makedirs(target_dir)
+        logger.debug('Creating symlink %s' % target)
         symlink(filename, target)
     else:
         logger.error('%s already exists' % target)
@@ -104,8 +105,10 @@ def rotate(filename, ffolder, _remove, cfg):
 
     for link in links[cfg[ffolder.lower()]:]:  # skip the n most recents
         filepath = path.realpath(link)
+        logger.info('Unlinking %s' % link)
         unlink(link)
         if _remove and not is_symlinked(filepath, others_ffolders):
+            logger.info('Removing %s' % filepath)
             remove(filepath)
 
 
