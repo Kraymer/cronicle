@@ -10,6 +10,7 @@
 
 **Originally, `cronicle` has been conceived as a solution to this particular [serverfault](https://serverfault.com) question :   [How to keep: daily backups for a week, weekly for a month, monthly for a year, and yearly after that](https://serverfault.com/questions/575163/how-to-keep-daily-backups-for-a-week-weekly-for-a-month-monthly-for-a-year-a)**
 
+
 ### Features
 
 - **simplicity:** add one line to your `crontab` and you're done
@@ -18,17 +19,20 @@
 
 ### Usage
 
-    Usage: cronicle.py [OPTIONS] FILE
+    Usage: cronicle.py [OPTIONS] FILES    
 
-      Keep rotated time-spaced archives of a file. 
-      FILE name must match one of the patterns present in /Users/flap/.config/cronicle/config.yaml.
+      Keep rotated time-spaced archives of files. FILES names must match one of
+      the patterns present in /Users/flap/.config/cronicle/config.yaml.    
 
     Options:
       -r, --remove   Remove previous file backup when no symlink points to it.
       -d, --dry-run  Just print instead of writing on filesystem.
       -v, --verbose
       --version      Show the version and exit.
-      -h, --help     Show this message and exit.
+      -h, --help     Show this message and exit.    
+
+      See https://github.com/Kraymer/cronicle/blob/master/README.md#usage for
+      more infos
 
 
 In order to manage a file backups with cronicle, you must have a section
@@ -37,7 +41,7 @@ Under it, you can then define values for the four kinds of periodic archives : `
 
 ### Example
 
-If you have dumps of a database in a `~/dumps` directory named like `mydb-20170101.dump`, `mydb-20170102.dump`, and want to keep each dump for 7 days plus go back up to two months ; a working `config.yaml` content would be ::
+If you have dumps of a database in a `~/dumps` directory named like `mydb-20170101.dump`, `mydb-20170102.dump`, and want to keep each dump for 7 days plus go back up to two months ; a working `config.yaml` content would be :
 
     /home/johndoe/dumps/mydb-*.dump:
         daily: 7

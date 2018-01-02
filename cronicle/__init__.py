@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright (c) 2018 Fabrice Laporte - kray.me
+# The MIT License http://www.opensource.org/licenses/mit-license.php
+
+"""Use cron to rotate backup files!
+"""
+
 import click
 import glob
 import logging
@@ -8,9 +17,8 @@ from os import (lstat, makedirs, path, remove, symlink, unlink)
 
 from .config import config
 
-
 __author__ = 'Fabrice Laporte <kraymer@gmail.com>'
-__version__ = '0.1.0'
+__version__ = '0.1.0-dev'
 logger = logging.getLogger(__name__)
 
 # Names of frequency folders that will host symlinks, and minimum number of days between 2 archives
