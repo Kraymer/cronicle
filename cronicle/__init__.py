@@ -38,7 +38,7 @@ def set_logging(verbose=False):
     logging.basicConfig(level=levels[verbose], format='%(levelname)s: %(message)s')
 
 
-def file_creation_day(filepath):
+def file_create_day(filepath):
     """Return file creation date with a daily precision.
     """
     try:
@@ -48,26 +48,24 @@ def file_creation_day(filepath):
     return datetime.fromtimestamp(filedate).replace(hour=0, minute=0, second=0, microsecond=0)
 
 
-def get_symlinks_dates(folder, pattern='*'):
-    """Return OrderedDict of symlinks sorted by creation dates (used as keys).
+def archives_create_days(folder, pattern='*'):
+    """Return OrderedDict of archives symlinks sorted by creation days (used as keys).
     """
     creation_dates = {}
     abs_pattern = path.join(folder, path.basename(pattern))
-    logger.debug('Scanning %s for symlinks' % abs_pattern)
     for x in glob.glob(abs_pattern):
         if path.islink(x):
-            creation_dates[file_creation_day(x)] = x
-    res = OrderedDict(sorted(creation_dates.items()))
-    return res
+            creation_dates[file_create_day(x)] = x
+    return OrderedDict(sorted(creation_dates.items()))
 
 
 def delta_days(filename, folder, cfg):
     """Return nb of elapsed days since last archive in given folder.
     """
-    files_dates = get_symlinks_dates(folder, cfg['pattern'])
-    if files_dates:
-        last_file_date = list(files_dates.keys())[-1]
-        return (file_creation_day(filename) - last_file_date).days
+    archives = archives_create_days(folder, cfg['pattern'])
+    if archives:
+        last_archive_day = list(archives.keys())[-1]
+        return (file_create_day(filename) - last_archive_day).days
 
 
 def timed_symlink(filename, ffolder, cfg):
@@ -97,7 +95,8 @@ def rotate(filename, ffolder, _remove, cfg):
     """
     others_ffolders = set(FREQUENCY_FOLDER_DAYS.keys()) - set([ffolder])
     target_dir = path.abspath(path.join(path.dirname(filename), ffolder))
-    links = list(get_symlinks_dates(target_dir, cfg['pattern']).values())[::-1]  # sort new -> old
+    # sort new -> old
+    links = list(archives_create_days(target_dir, cfg['pattern']).values())[::-1]
 
     for link in links[cfg[ffolder.lower()]:]:  # skip the n most recents
         filepath = path.realpath(link)
@@ -151,7 +150,7 @@ def find_config(filename, cfg=None):
 @click.version_option(__version__)
 def cronicle_cli(filenames, remove, dry_run, verbose):
     set_logging(max(verbose, dry_run))
-    if dry_run:
+    if dry_run:  # disable functions performing filesystem operations
         globals().update({func: lambda *x: None for func in ('remove', 'symlink', 'unlink')})
 
     for filename in filenames:
