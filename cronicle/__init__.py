@@ -21,6 +21,8 @@ __author__ = 'Fabrice Laporte <kraymer@gmail.com>'
 __version__ = '0.1.0-dev'
 logger = logging.getLogger(__name__)
 
+DEFAULT_CFG = {'daily': 0, 'weekly': 0, 'monthly': 0, 'yearly': 0, 'pattern': '*'}
+
 # Names of frequency folders that will host symlinks, and minimum number of days between 2 archives
 FREQUENCY_FOLDER_DAYS = {
     'DAILY': 1,
@@ -36,6 +38,19 @@ def set_logging(verbose=False):
     """
     levels = {0: logging.WARNING, 1: logging.INFO, 2: logging.DEBUG}
     logging.basicConfig(level=levels[verbose], format='%(levelname)s: %(message)s')
+
+
+def frequency_folder_days(ffolder):
+    """Return minimum number of days between 2 archives inside given folder
+    """
+    try:
+        return FREQUENCY_FOLDER_DAYS[ffolder.upper()]
+    except KeyError:
+        pass
+    try:
+        return int(ffolder.split('|')[-1])
+    except:
+        return None
 
 
 def file_create_day(filepath):
@@ -72,9 +87,9 @@ def timed_symlink(filename, ffolder, cfg):
     """Create symlink for filename in ffolder if enough days elapsed since last archive.
        Return True if symlink created.
     """
-    target_dir = path.abspath(path.join(path.dirname(filename), ffolder))
+    target_dir = path.abspath(path.join(path.dirname(filename), ffolder.split('|')[0]))
     days_elapsed = delta_days(filename, target_dir, cfg)
-    if (days_elapsed is not None) and days_elapsed < FREQUENCY_FOLDER_DAYS[ffolder]:
+    if (days_elapsed is not None) and days_elapsed < frequency_folder_days(ffolder):
         logger.info('No symlink created : too short delay since last archive')
         return
     target = path.join(target_dir, path.basename(filename))
@@ -93,8 +108,8 @@ def timed_symlink(filename, ffolder, cfg):
 def rotate(filename, ffolder, _remove, cfg):
     """Keep only the n last links of folder that matches same pattern than filename.
     """
-    others_ffolders = set(FREQUENCY_FOLDER_DAYS.keys()) - set([ffolder])
-    target_dir = path.abspath(path.join(path.dirname(filename), ffolder))
+    others_ffolders = set(cfg.keys()) - set([ffolder])
+    target_dir = path.abspath(path.join(path.dirname(filename), ffolder.split('|')[0]))
     # sort new -> old
     links = list(archives_create_days(target_dir, cfg['pattern']).values())[::-1]
 
@@ -121,7 +136,7 @@ def is_symlinked(filepath, folders):
 def find_config(filename, cfg=None):
     """Return the config matched by filename or the default one.
     """
-    res = {'daily': 0, 'weekly': 0, 'monthly': 0, 'yearly': 0, 'pattern': '*'}
+    res = DEFAULT_CFG
     dirname, basename = path.split(filename)
 
     if not cfg:
@@ -131,7 +146,12 @@ def find_config(filename, cfg=None):
         abskey = path.join(dirname, key) if not path.isabs(key) else key
         for x in glob.glob(abskey):
             if x.endswith(filename):
-                res.update(config[key].get())
+                cfg = config[key].get()
+                res.update(cfg)
+                for key in cfg:
+                    if frequency_folder_days(key) is None:
+                        logger.error("Invalid configuration attribute '%s'" % key)
+                        exit(1)
                 res['pattern'] = key
                 return res
 
@@ -163,9 +183,8 @@ def cronicle_cli(filenames, remove, dry_run, verbose):
                 CONFIG_PATH, filename))
             exit(1)
 
-        for ffolder in FREQUENCY_FOLDER_DAYS.keys():
-            if cfg[ffolder.lower()]:
-                timed_symlink(filename, ffolder, cfg) and rotate(filename, ffolder, remove, cfg)
+        for ffolder in [x.upper() for x in set(cfg.keys()) - set(['pattern'])]:
+            timed_symlink(filename, ffolder, cfg) and rotate(filename, ffolder, remove, cfg)
 
 
 if __name__ == "__main__":
