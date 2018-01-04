@@ -148,8 +148,8 @@ def find_config(filename, cfg=None):
             if x.endswith(filename):
                 cfg = config[key].get()
                 res.update(cfg)
-                for key in cfg:
-                    if frequency_folder_days(key) is None:
+                for frequency in cfg:
+                    if frequency_folder_days(frequency) is None:
                         logger.error("Invalid configuration attribute '%s'" % key)
                         exit(1)
                 res['pattern'] = key
