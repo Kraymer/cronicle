@@ -108,7 +108,7 @@ def timed_symlink(filename, ffolder, cfg):
 def rotate(filename, ffolder, _remove, cfg):
     """Keep only the n last links of folder that matches same pattern than filename.
     """
-    others_ffolders = set(cfg.keys()) - set([ffolder])
+    others_ffolders = [x.split('|')[0].upper() for x in set(cfg.keys()) - set([ffolder])]
     target_dir = path.abspath(path.join(path.dirname(filename), ffolder.split('|')[0]))
     # sort new -> old
     links = list(archives_create_days(target_dir, cfg['pattern']).values())[::-1]
@@ -118,7 +118,6 @@ def rotate(filename, ffolder, _remove, cfg):
         logger.info('Unlinking %s' % link)
         unlink(link)
         if _remove and not is_symlinked(filepath, others_ffolders):
-            logger.info('Removing %s' % filepath)
             remove(filepath)
 
 
@@ -126,7 +125,7 @@ def is_symlinked(filepath, folders):
     """Return True if filepath has symlinks pointing to it in given folders.
     """
     dirname, basename = path.split(filepath)
-    for folder in folders:
+    for folder in folders: 
         target = path.abspath(path.join(dirname, folder, basename))
         if path.lexists(target):
             return True
@@ -162,13 +161,14 @@ def find_config(filename, cfg=None):
                epilog=('See https://github.com/Kraymer/cronicle/blob/master/README.md#usage for '
                        'more infos'))
 @click.argument('filenames', type=click.Path(exists=True), metavar='FILES', nargs=-1)
-@click.option('-r', '--remove', help='Remove previous file backup when no symlink points to it.',
+@click.option('-r', '--remove', '_remove',
+    help='Remove previous file backup when no symlink points to it.',
     default=False, is_flag=True)
 @click.option('-d', '--dry-run', count=True,
               help='Just print instead of writing on filesystem.')
 @click.option('-v', '--verbose', count=True)
 @click.version_option(__version__)
-def cronicle_cli(filenames, remove, dry_run, verbose):
+def cronicle_cli(filenames, _remove, dry_run, verbose):
     set_logging(max(verbose, dry_run))
     if dry_run:  # disable functions performing filesystem operations
         globals().update({func: lambda *x: None for func in ('remove', 'symlink', 'unlink')})
@@ -184,7 +184,9 @@ def cronicle_cli(filenames, remove, dry_run, verbose):
             exit(1)
 
         for ffolder in [x.upper() for x in set(cfg.keys()) - set(['pattern'])]:
-            timed_symlink(filename, ffolder, cfg) and rotate(filename, ffolder, remove, cfg)
+            timed_symlink(filename, ffolder, cfg)
+        for ffolder in [x.upper() for x in set(cfg.keys()) - set(['pattern'])]:
+            rotate(filename, ffolder, _remove, cfg)
 
 
 if __name__ == "__main__":
