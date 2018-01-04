@@ -10,6 +10,7 @@
 
 **Originally, `cronicle` has been conceived as a solution to this particular [serverfault](https://serverfault.com) question :   [How to keep: daily backups for a week, weekly for a month, monthly for a year, and yearly after that](https://serverfault.com/questions/575163/how-to-keep-daily-backups-for-a-week-weekly-for-a-month-monthly-for-a-year-a)**
 
+[![asciicast](https://asciinema.org/a/155608.png)](https://asciinema.org/a/155608)
 
 ### Features
 
