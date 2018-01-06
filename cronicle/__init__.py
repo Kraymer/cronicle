@@ -18,7 +18,7 @@ from os import (lstat, makedirs, path, remove, symlink, unlink)
 from .config import config
 
 __author__ = 'Fabrice Laporte <kraymer@gmail.com>'
-__version__ = '0.1.0-dev'
+__version__ = '0.1.0'
 logger = logging.getLogger(__name__)
 
 DEFAULT_CFG = {'daily': 0, 'weekly': 0, 'monthly': 0, 'yearly': 0, 'pattern': '*'}
