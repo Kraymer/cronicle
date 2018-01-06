@@ -29,8 +29,6 @@ In order to manage a file backups with cronicle, you must have a section in the 
 Or define a custom periodicity using the *pipe syntax* eg `bimonthly|60: 3` to keep archives every 
 two months over the last six months.
 
-pip install git+https://github.com/Kraymer/cronicle.git@0.1.0
-
 Example
 -------
 
