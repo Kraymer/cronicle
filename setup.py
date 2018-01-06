@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2017 Fabrice Laporte - kray.me
+# Copyright (c) 2018 Fabrice Laporte - kray.me
 # The MIT License http://www.opensource.org/licenses/mit-license.php
 
 from setuptools import setup
@@ -59,7 +59,7 @@ setup(name='cronicle',
       packages=['cronicle', ],
       entry_points={
           'console_scripts': [
-              'cronicle = cronicle:main',
+              'cronicle = cronicle:cronicle_cli',
           ],
       },
       install_requires=coerce_file('requirements.txt').split('\n'),
