@@ -15,23 +15,24 @@ Originally, `cronicle` has been conceived as a solution to this particular [serv
 [![nopypi asciicast](https://asciinema.org/a/155861.png)](https://asciinema.org/a/155861)
 
 Features
-========
+--------
 
 - **simplicity:** add one line to your `crontab` and you're done
 - **files rotation:** keep the N most recent versions of a file
 - **space efficient:** use symlinks in target directories to store a single occurence of each backup instead of performing copies. When removing a link, remove the underlying file if no other link point to it.
 
 Usage
-=====
+-----
 
 In order to manage a file backups with cronicle, you must have a section in the `config.yaml` that matches the backups names. Under it you can then define values (number of archives to keep) for the four kinds of periodic archives : `daily`, `weekly`, `monthly`, `yearly`. 
  
 Or define a custom periodicity using the *pipe syntax* eg `bimonthly|60: 3` to keep archives every 
 two months over the last six months.
 
+pip install git+https://github.com/Kraymer/cronicle.git@0.1.0
 
 Example
-=======
+-------
 
 If you have dumps of a database in a `~/dumps` directory named like `mydb-20170101.dump`, `mydb-20170102.dump`, and want to keep each dump for 7 days plus go back up to two months ; a working `config.yaml` content would be :
 
@@ -39,10 +40,20 @@ If you have dumps of a database in a `~/dumps` directory named like `mydb-201701
         daily: 7
         monthly: 2
 
-Next `cronicle call will result in the creation of folders `DAILY` and `MONTHLY` in `/home/johndoe/dumps/`, each folder containing symlinks to the .dump files.
+Next `cronicle` call will result in the creation of folders `DAILY` and `MONTHLY` in `/home/johndoe/dumps/`, each folder containing symlinks to the .dump files.
+
+Installation
+------------
+
+cronicle is written for [Python 2.7](ttps://www.python.org/downloads/) and
+is tested on Linux and Mac OS X.
+
+Install with [pip](https://pip.pypa.io/en/stable/) via
+`pip install git+https://github.com/Kraymer/cronicle.git` command.
+
 
 `cron` triggering
-=================
+-----------------
 
 For a no-brainer use, I recommend to run cronicle via cron, just after the command in charge of performing the backup. A `crontab` example :
 
