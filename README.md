@@ -43,7 +43,7 @@ Next `cronicle` call will result in the creation of folders `DAILY` and `MONTHLY
 Installation
 ------------
 
-cronicle is written for [Python 2.7](ttps://www.python.org/downloads/) and
+cronicle is written for [Python 2.7](ttps://www.python.org/downloads/) and [Python 3](ttps://www.python.org/downloads/), 
 is tested on Linux and Mac OS X.
 
 Install with [pip](https://pip.pypa.io/en/stable/) via
