@@ -1,5 +1,4 @@
 [![nopypi travis](https://travis-ci.org/Kraymer/cronicle.svg?branch=master)](https://travis-ci.org/Kraymer/cronicle)
-[![nopypi pypi](http://img.shields.io/pypi/v/cronicle.svg)](https://pypi.python.org/pypi/cronicle)
 [![nopypi rss](https://img.shields.io/badge/rss-subscribe-orange.svg)](https://github.com/Kraymer/cronicle/releases.atom)
 
 cronicle
@@ -43,7 +42,7 @@ Next `cronicle` call will result in the creation of folders `DAILY` and `MONTHLY
 Installation
 ------------
 
-cronicle is written for [Python 2.7](ttps://www.python.org/downloads/) and [Python 3](ttps://www.python.org/downloads/), 
+cronicle is written for [Python 2.7](https://www.python.org/downloads/) and [Python 3](https://www.python.org/downloads/), 
 is tested on Linux and Mac OS X.
 
 Install with [pip](https://pip.pypa.io/en/stable/) via
