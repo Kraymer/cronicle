@@ -1,7 +1,7 @@
 [![nopypi travis](https://travis-ci.org/Kraymer/cronicle.svg?branch=master)](https://travis-ci.org/Kraymer/cronicle)
 [![nopypi rss](https://img.shields.io/badge/rss-subscribe-orange.svg)](https://github.com/Kraymer/cronicle/releases.atom)
 
-cronicle
+cronicle :hourglass_flowing_sand: :arrows_counterclockwise: :floppy_disk: 
 ========
 
 > **/ˈkɹɒnɪkəl/** :
