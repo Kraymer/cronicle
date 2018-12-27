@@ -14,6 +14,7 @@ import logging
 from collections import OrderedDict
 from datetime import datetime
 from os import (lstat, makedirs, path, remove, symlink, unlink)
+from shutil import rmtree
 
 from .config import config
 
@@ -118,7 +119,10 @@ def rotate(filename, ffolder, _remove, cfg):
         logger.info('Unlinking %s' % link)
         unlink(link)
         if _remove and not is_symlinked(filepath, others_ffolders):
-            remove(filepath)
+            if path.isfile(filepath):
+                remove(filepath)
+            elif path.isdir(filepath):
+                rmtree(filepath)
 
 
 def is_symlinked(filepath, folders):
