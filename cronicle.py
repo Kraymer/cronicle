@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import cronicle
 
 if __name__ == "__main__":
