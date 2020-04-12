@@ -76,7 +76,9 @@ def archives_create_days(folder, pattern='*'):
     abs_pattern = path.join(folder, path.basename(pattern))
     for x in glob.glob(abs_pattern):
         if path.islink(x):
-            creation_dates[file_create_day(x)] = x
+            file_day = file_create_day(x)
+            if file_day is not None:
+                creation_dates[file_day] = x
     return OrderedDict(sorted(creation_dates.items()))
 
 
