@@ -88,7 +88,8 @@ def delta_days(filename, folder, cfg):
     archives = archives_create_days(folder, cfg['pattern'])
     if archives:
         last_archive_day = list(archives.keys())[-1]
-        return (file_create_day(filename) - last_archive_day).days
+        filename_day = file_create_day(filename)
+        return (filename_day - last_archive_day).days
 
 
 def timed_symlink(filename, ffolder, cfg):
