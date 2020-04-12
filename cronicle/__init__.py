@@ -58,6 +58,10 @@ def file_create_day(filepath):
     """Return file creation date with a daily precision.
     """
     realpath = path.realpath(filepath)
+    if not path.exists(realpath):
+        logger.info('No source file found at %s, deleting obsolete symlink %s.' % (realpath, filepath))
+        unlink(filepath)
+        return None
     try:
         filedate = lstat(realpath).st_birthtime
     except AttributeError:
