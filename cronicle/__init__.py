@@ -101,10 +101,7 @@ def timed_symlink(filename, ffolder, cfg):
     """
     target_dir = path.abspath(path.join(path.dirname(filename), ffolder.split('|')[0]))
     days_elapsed = delta_days(filename, target_dir, cfg)
-    # Handle deleted files.
-    if days_elapsed is None:
-        return
-    if days_elapsed < frequency_folder_days(ffolder):
+    if (days_elapsed is not None) and days_elapsed < frequency_folder_days(ffolder):
         logger.info('No symlink created : too short delay since last archive')
         return
     target = path.join(target_dir, path.basename(filename))
