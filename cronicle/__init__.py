@@ -57,10 +57,11 @@ def frequency_folder_days(ffolder):
 def file_create_day(filepath):
     """Return file creation date with a daily precision.
     """
+    realpath = path.realpath(filepath)
     try:
-        filedate = lstat(path.realpath(filepath)).st_birthtime
+        filedate = lstat(realpath).st_birthtime
     except AttributeError:
-        filedate = lstat(path.realpath(filepath)).st_mtime
+        filedate = lstat(realpath).st_mtime
     return datetime.fromtimestamp(filedate).replace(hour=0, minute=0, second=0, microsecond=0)
 
 
