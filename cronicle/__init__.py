@@ -89,6 +89,9 @@ def delta_days(filename, folder, cfg):
     if archives:
         last_archive_day = list(archives.keys())[-1]
         filename_day = file_create_day(filename)
+        # Handle deleted files.
+        if filename_day is None:
+            return None
         return (filename_day - last_archive_day).days
 
 
