@@ -99,7 +99,7 @@ def timed_symlink(filename, ffolder, cfg):
         if not path.exists(target_dir):
             makedirs(target_dir)
         logger.info('Creating symlink %s' % target)
-        symlink(filename, target)
+        symlink(path.join('..', path.basename(filename)), target)
     else:
         logger.error('%s already exists' % target)
         return
