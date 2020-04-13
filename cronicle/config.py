@@ -1,3 +1,3 @@
 from . import confit
 
-config = confit.LazyConfig('cronicle', __name__)
+config = confit.LazyConfig("cronicle", __name__)
