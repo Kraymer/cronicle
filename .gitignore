@@ -3,6 +3,8 @@ __pycache__
 *.pyc
 bin/
 cronicle.egg-info/
+.direnv
+.envrc
 lib/
 include/
 test/rsrc/foobar*
