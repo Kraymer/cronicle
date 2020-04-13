@@ -1,4 +1,4 @@
-|nopypi travis| |nopypi rss|
+|nopypi travis| 
 
 cronicle :hourglass\_flowing\_sand::arrows\_counterclockwise::floppy\_disk:
 ===========================================================================
@@ -87,7 +87,5 @@ database dumps (7 latest daily + 2 monthly).
 
 .. |nopypi travis| image:: https://travis-ci.org/Kraymer/cronicle.svg?branch=master
    :target: https://travis-ci.org/Kraymer/cronicle
-.. |nopypi rss| image:: https://img.shields.io/badge/rss-subscribe-orange.svg
-   :target: https://github.com/Kraymer/cronicle/releases.atom
 .. |nopypi asciicast| image:: https://asciinema.org/a/155861.png
    :target: https://asciinema.org/a/155861
