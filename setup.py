@@ -16,7 +16,6 @@ with open(os.path.join(PKG_NAME, "VERSION")) as _file:
 # Deploy: python3 setup.py sdist bdist_wheel; twine upload --verbose dist/*
 setup(name=PKG_NAME,
       version=VERSION,
-      description=coerce_file('cronicle/__init__.py').docstring,
       description="Use cron to rotate backup files!",
       long_description=open(os.path.join(DIRPATH, "README.rst")).read(),
       author='Fabrice Laporte',
