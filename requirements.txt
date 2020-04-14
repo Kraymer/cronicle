@@ -1,6 +1,7 @@
 click
+mock
 ordereddict
+python-dateutil
 pyyaml
 six
 tox
-python-dateutil
