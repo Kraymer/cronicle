@@ -162,6 +162,24 @@ def find_config(filename, cfg=None):
                 return res
 
 
+def cronicle(filenames, _remove=False):
+    for filename in filenames:
+        filename = path.abspath(filename)
+        cfg = find_config(filename)
+        logger.debug("Config is %s" % cfg)
+
+        if not cfg:
+            logger.error(
+                "No pattern found in %s that matches %s." % (CONFIG_PATH, filename)
+            )
+            exit(1)
+        freq_dirs = [x.upper() for x in set(cfg.keys()) - set(["pattern"]) if cfg[x]]
+        for freq_dir in freq_dirs:
+            timed_symlink(filename, freq_dir, cfg)
+        for freq_dir in freq_dirs:
+            rotate(filename, freq_dir, _remove, cfg)
+
+
 @click.command(
     context_settings=dict(help_option_names=["-h", "--help"]),
     help=(
@@ -193,22 +211,7 @@ def cronicle_cli(filenames, _remove, dry_run, verbose):
         globals().update(
             {func: lambda *x: None for func in ("remove", "symlink", "unlink")}
         )
-
-    for filename in filenames:
-        filename = path.abspath(filename)
-        cfg = find_config(filename)
-        logger.debug("Config is %s" % cfg)
-
-        if not cfg:
-            logger.error(
-                "No pattern found in %s that matches %s." % (CONFIG_PATH, filename)
-            )
-            exit(1)
-
-        for ffolder in [x.upper() for x in set(cfg.keys()) - set(["pattern"])]:
-            timed_symlink(filename, ffolder, cfg)
-        for ffolder in [x.upper() for x in set(cfg.keys()) - set(["pattern"])]:
-            rotate(filename, ffolder, _remove, cfg)
+    cronicle(filenames, _remove)
 
 
 if __name__ == "__main__":
