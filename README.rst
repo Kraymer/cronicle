@@ -34,8 +34,8 @@ Usage
 
 In order to manage a file backups with cronicle, you must have a section
 in the ``config.yaml`` that matches the backups names. Under it you can
-then define values (number of archives to keep) for the four kinds of
-periodic archives : ``daily``, ``weekly``, ``monthly``, ``yearly``.
+then define values (number of archives to keep) for the five kinds of
+periodic archives : ``hourly``, ``daily``, ``weekly``, ``monthly``, ``yearly``.
 
 Or define a custom periodicity using the *pipe syntax* eg
 ``bimonthly|60: 3`` to keep archives every two months over the last six

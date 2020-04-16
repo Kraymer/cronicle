@@ -31,6 +31,7 @@ set_logging()
 # Names of frequency folders that will host symlinks, and minimum delta elapsed between 2 archives
 FREQUENCY_FOLDER_DAYS = {
     "DAILY": ("days", 1),
+    "HOURLY": ("hours", 1),
     "WEEKLY": ("days", 7),
     "MONTHLY": ("months", 1),
     "YEARLY": ("months", 12),

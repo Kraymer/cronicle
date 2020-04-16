@@ -32,6 +32,7 @@ def mock_file_create_day(filepath):
     """
     return parser.parse(filepath.split("/")[-1][4:].replace("_", " "))
 
+
 class ConfigTest(unittest.TestCase):
     def test_find_config_ok(self):
         res = find_config("rsrc/prefix_01_suffix.ext", config)
@@ -76,6 +77,7 @@ class Test(unittest.TestCase):
         config.add(
             {
                 os.path.join(self.rootdir.name, "foo_*"): {
+                    "hourly": 3,
                     "daily": 3,
                     "weekly": 4,
                     "monthly": 4,
@@ -98,5 +100,7 @@ class Test(unittest.TestCase):
         )
         self.assertEqual(
             set(os.listdir(os.path.join(self.rootdir.name, "MONTHLY"))),
-            {"foo_2019-12-01_09h", "foo_2020-01-01_09h", "foo_2020-02-01_09h",},
-        )
+            {"foo_2019-12-01_09h", "foo_2020-01-01_09h", "foo_2020-02-01_09h"})
+        self.assertEqual(
+            set(os.listdir(os.path.join(self.rootdir.name, "HOURLY"))),
+            {"foo_2020-02-27_14h", "foo_2020-02-28_09h", "foo_2020-02-28_14h"})
