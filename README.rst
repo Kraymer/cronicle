@@ -1,4 +1,5 @@
-|nopypi travis| 
+|travis| 
+|coveralls|
 
 cronicle :hourglass\_flowing\_sand::arrows\_counterclockwise::floppy\_disk:
 ===========================================================================
@@ -17,7 +18,7 @@ keep: daily backups for a week, weekly for a month, monthly for a year,
 and yearly after
 that <https://serverfault.com/questions/575163/how-to-keep-daily-backups-for-a-week-weekly-for-a-month-monthly-for-a-year-a>`__.
 
-|nopypi asciicast|
+|asciicast|
 
 Features
 --------
@@ -85,7 +86,10 @@ If used with the ``config.yaml`` as defined in the previous section,
 this daily call to cronicle guarantees that you will keep at most 9
 database dumps (7 latest daily + 2 monthly).
 
-.. |nopypi travis| image:: https://travis-ci.org/Kraymer/cronicle.svg?branch=master
+.. |travis| image:: https://travis-ci.org/Kraymer/cronicle.svg?branch=master
    :target: https://travis-ci.org/Kraymer/cronicle
-.. |nopypi asciicast| image:: https://asciinema.org/a/155861.png
+.. |asciicast| image:: https://asciinema.org/a/155861.png
    :target: https://asciinema.org/a/155861
+.. |coveralls| image:: https://coveralls.io/repos/github/Kraymer/cronicle/badge.svg?branch=master
+   :target: https://coveralls.io/github/Kraymer/cronicle?branch=master
+
