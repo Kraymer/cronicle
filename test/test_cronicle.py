@@ -99,3 +99,7 @@ class Test(unittest.TestCase):
                 "foo_2020-02-28_09h",
             },
         )
+        self.assertEqual(
+            set(os.listdir(os.path.join(self.rootdir.name, "MONTHLY"))),
+            {"foo_2019-12-01_09h", "foo_2020-01-01_09h", "foo_2020-02-01_09h",},
+        )
