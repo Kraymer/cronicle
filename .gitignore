@@ -1,4 +1,5 @@
 *.pyc
+.coverage
 .direnv
 .envrc
 .pre-commit-config.yaml

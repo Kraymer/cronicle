@@ -1,0 +1,13 @@
+[report]
+omit =
+    */pyshared/*
+    */python?.?/*
+    */site-packages/nose/*
+    */test/*
+    cronicle/confit.py
+exclude_lines =
+    assert False
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    def __repr__
+    def parse_args
