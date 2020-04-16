@@ -70,62 +70,12 @@ def archives_create_days(folder, pattern="*"):
     """Return OrderedDict of archives symlinks sorted by creation days (used as keys).
     """
     creation_dates = {}
+
     abs_pattern = path.join(folder, path.basename(pattern))
     for x in glob.glob(abs_pattern):
         if path.islink(x):
             creation_dates[file_create_day(x)] = x
     return OrderedDict(sorted(creation_dates.items()))
-
-
-def delta_days(filename, folder, cfg):
-    """Return nb of elapsed days since last archive in given folder.
-    """
-    archives = archives_create_days(folder, cfg["pattern"])
-    if archives:
-        last_archive_day = list(archives.keys())[-1]
-        return (file_create_day(filename) - last_archive_day).days
-
-
-def timed_symlink(filename, freq_dir, cfg):
-    """Create symlink for filename in freq_dir if enough days elapsed since last archive.
-       Return True if symlink created.
-    """
-    target_dir = path.abspath(path.join(path.dirname(filename), freq_dir.split("|")[0]))
-    days_elapsed = delta_days(filename, target_dir, cfg)
-    if (days_elapsed is not None) and days_elapsed < frequency_folder_days(freq_dir):
-        logger.info("No symlink created : too short delay since last archive")
-        return
-    target = path.join(target_dir, path.basename(filename))
-    if not path.lexists(target):
-        if not path.exists(target_dir):
-            makedirs(target_dir)
-        logger.info("Creating symlink %s" % target)
-        symlink(filename, target)
-    else:
-        logger.error("%s already exists" % target)
-        return
-    return True
-
-
-def rotate(filename, freq_dir, _remove, cfg):
-    """Keep only the n last links of folder that matches same pattern than filename.
-    """
-    others_freq_dirs = [
-        x.split("|")[0].upper() for x in set(cfg.keys()) - set([freq_dir])
-    ]
-    target_dir = path.abspath(path.join(path.dirname(filename), freq_dir.split("|")[0]))
-    # sort new -> old
-    links = list(archives_create_days(target_dir, cfg["pattern"]).values())[::-1]
-
-    for link in links[cfg[freq_dir.lower()] :]:  # skip the n most recents
-        filepath = path.realpath(link)
-        logger.info("Unlinking %s" % link)
-        unlink(link)
-        if _remove and not is_symlinked(filepath, others_freq_dirs):
-            if path.isfile(filepath):
-                remove(filepath)
-            elif path.isdir(filepath):
-                rmtree(filepath)
 
 
 def is_symlinked(filepath, folders):
@@ -162,22 +112,80 @@ def find_config(filename, cfg=None):
                 return res
 
 
-def cronicle(filenames, _remove=False):
-    for filename in filenames:
-        filename = path.abspath(filename)
-        cfg = find_config(filename)
-        logger.debug("Config is %s" % cfg)
+class Cronicle:
+    def __init__(self, filenames, _remove=False):
+        for filename in [path.abspath(x) for x in filenames]:
+            self.cfg = find_config(filename)
+            if not self.cfg:
+                logger.error(
+                    "No pattern found in %s that matches %s." % (CONFIG_PATH, filename)
+                )
+                exit(1)
+            freq_dirs = [
+                x.upper()
+                for x in set(self.cfg.keys()) - set(["pattern"])
+                if self.cfg[x]
+            ]
+            for freq_dir in freq_dirs:
+                self.timed_symlink(filename, freq_dir)
+            for freq_dir in freq_dirs:
+                self.rotate(filename, freq_dir, _remove)
 
-        if not cfg:
-            logger.error(
-                "No pattern found in %s that matches %s." % (CONFIG_PATH, filename)
-            )
-            exit(1)
-        freq_dirs = [x.upper() for x in set(cfg.keys()) - set(["pattern"]) if cfg[x]]
-        for freq_dir in freq_dirs:
-            timed_symlink(filename, freq_dir, cfg)
-        for freq_dir in freq_dirs:
-            rotate(filename, freq_dir, _remove, cfg)
+    def days_since_last_archive(self, filename, folder):
+        """Return nb of elapsed days since last archive in given folder.
+        """
+        archives = archives_create_days(folder, self.cfg["pattern"])
+        if archives:
+            last_archive_day = list(archives.keys())[-1]
+            return (file_create_day(filename) - last_archive_day).days
+
+    def timed_symlink(self, filename, freq_dir):
+        """Create symlink for filename in freq_dir if enough days elapsed since last archive.
+           Return True if symlink created.
+        """
+        target_dir = path.abspath(
+            path.join(path.dirname(filename), freq_dir.split("|")[0])
+        )
+        days_elapsed = self.days_since_last_archive(filename, target_dir)
+        if (days_elapsed is not None) and days_elapsed < frequency_folder_days(
+            freq_dir
+        ):
+            logger.info("No symlink created : too short delay since last archive")
+            return
+        target = path.join(target_dir, path.basename(filename))
+        if not path.lexists(target):
+            if not path.exists(target_dir):
+                makedirs(target_dir)
+            logger.info("Creating symlink %s" % target)
+            symlink(filename, target)
+        else:
+            logger.error("%s already exists" % target)
+            return
+        return True
+
+    def rotate(self, filename, freq_dir, _remove):
+        """Keep only the n last links of folder that matches same pattern than filename.
+        """
+        others_freq_dirs = [
+            x.split("|")[0].upper() for x in set(self.cfg.keys()) - set([freq_dir])
+        ]
+        target_dir = path.abspath(
+            path.join(path.dirname(filename), freq_dir.split("|")[0])
+        )
+        # sort new -> old
+        links = list(archives_create_days(target_dir, self.cfg["pattern"]).values())[
+            ::-1
+        ]
+
+        for link in links[self.cfg[freq_dir.lower()] :]:  # skip the n most recents
+            filepath = path.realpath(link)
+            logger.info("Unlinking %s" % link)
+            unlink(link)
+            if _remove and not is_symlinked(filepath, others_freq_dirs):
+                if path.isfile(filepath):
+                    remove(filepath)
+                elif path.isdir(filepath):
+                    rmtree(filepath)
 
 
 @click.command(
@@ -211,7 +219,7 @@ def cronicle_cli(filenames, _remove, dry_run, verbose):
         globals().update(
             {func: lambda *x: None for func in ("remove", "symlink", "unlink")}
         )
-    cronicle(filenames, _remove)
+    Cronicle(filenames, _remove)
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ import glob
 import mock
 from dateutil import parser
 
-from cronicle import find_config, cronicle
+from cronicle import find_config, Cronicle
 from cronicle.config import config
 
 RSRC = os.path.join(os.path.realpath(os.path.dirname(__file__)), "rsrc")
@@ -60,6 +60,20 @@ class Test(unittest.TestCase):
 
         self.last_file = abspath
 
+    def test_archives_folders(self):
+        """Check that no empty archive folder is created."""
+        config.add({os.path.join(self.rootdir.name, "foo_*"): {"daily": 3}})
+        Cronicle([self.last_file])
+        self.assertTrue(os.path.exists(os.path.join(self.rootdir.name, "DAILY")))
+        self.assertFalse(
+            any(
+                [
+                    os.path.exists(os.path.join(self.rootdir.name, x))
+                    for x in (u"MONTHLY", u"WEEKLY", u"YEARLY")
+                ]
+            )
+        )
+
     @mock.patch("cronicle.file_create_day", side_effect=mock_file_create_day)
     def test_number_of_archives(self, mock):
         config.add(
@@ -73,7 +87,7 @@ class Test(unittest.TestCase):
             }
         )
         files = sorted(glob.glob(os.path.join(self.rootdir.name, "foo_*")))
-        cronicle(files)
+        Cronicle(files)
         self.assertEqual(
             set(os.listdir(os.path.join(self.rootdir.name, "DAILY"))),
             {
