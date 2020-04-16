@@ -16,13 +16,16 @@ from datetime import datetime
 from os import lstat, makedirs, path, remove, symlink, unlink
 from shutil import rmtree
 
-from .config import config
+from .config import config, set_logging
 
-__author__ = "Fabrice Laporte <kraymer@gmail.com>"
-__version__ = "0.1.0"
+with codecs.open(
+    os.path.join(os.path.dirname(__file__), "VERSION"), encoding="utf-8"
+) as _file:
+    __version__ = _file.read().strip()
+
 logger = logging.getLogger(__name__)
-
 DEFAULT_CFG = {"daily": 0, "weekly": 0, "monthly": 0, "yearly": 0, "pattern": "*"}
+set_logging()
 
 # Names of frequency folders that will host symlinks, and minimum number of days between 2 archives
 FREQUENCY_FOLDER_DAYS = {
@@ -34,11 +37,6 @@ FREQUENCY_FOLDER_DAYS = {
 CONFIG_PATH = path.join(config.config_dir(), "config.yaml")
 
 
-def set_logging(verbose=False):
-    """Set logging level based on verbose flag.
-    """
-    levels = {0: logging.WARNING, 1: logging.INFO, 2: logging.DEBUG}
-    logging.basicConfig(level=levels[verbose], format="%(levelname)s: %(message)s")
 
 
 def frequency_folder_days(freq_dir):
