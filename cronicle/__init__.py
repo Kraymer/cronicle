@@ -41,16 +41,16 @@ def set_logging(verbose=False):
     logging.basicConfig(level=levels[verbose], format="%(levelname)s: %(message)s")
 
 
-def frequency_folder_days(ffolder):
+def frequency_folder_days(freq_dir):
     """Return minimum number of days between 2 archives inside given folder
     """
     try:
-        return FREQUENCY_FOLDER_DAYS[ffolder.upper()]
+        return FREQUENCY_FOLDER_DAYS[freq_dir.upper()]
     except KeyError:
         pass
     try:
-        return int(ffolder.split("|")[-1])
-    except:
+        return int(freq_dir.split("|")[-1])
+    except Exception:
         return None
 
 
@@ -86,17 +86,16 @@ def delta_days(filename, folder, cfg):
         return (file_create_day(filename) - last_archive_day).days
 
 
-def timed_symlink(filename, ffolder, cfg):
-    """Create symlink for filename in ffolder if enough days elapsed since last archive.
+def timed_symlink(filename, freq_dir, cfg):
+    """Create symlink for filename in freq_dir if enough days elapsed since last archive.
        Return True if symlink created.
     """
-    target_dir = path.abspath(path.join(path.dirname(filename), ffolder.split("|")[0]))
+    target_dir = path.abspath(path.join(path.dirname(filename), freq_dir.split("|")[0]))
     days_elapsed = delta_days(filename, target_dir, cfg)
-    if (days_elapsed is not None) and days_elapsed < frequency_folder_days(ffolder):
+    if (days_elapsed is not None) and days_elapsed < frequency_folder_days(freq_dir):
         logger.info("No symlink created : too short delay since last archive")
         return
     target = path.join(target_dir, path.basename(filename))
-
     if not path.lexists(target):
         if not path.exists(target_dir):
             makedirs(target_dir)
@@ -108,21 +107,21 @@ def timed_symlink(filename, ffolder, cfg):
     return True
 
 
-def rotate(filename, ffolder, _remove, cfg):
+def rotate(filename, freq_dir, _remove, cfg):
     """Keep only the n last links of folder that matches same pattern than filename.
     """
-    others_ffolders = [
-        x.split("|")[0].upper() for x in set(cfg.keys()) - set([ffolder])
+    others_freq_dirs = [
+        x.split("|")[0].upper() for x in set(cfg.keys()) - set([freq_dir])
     ]
-    target_dir = path.abspath(path.join(path.dirname(filename), ffolder.split("|")[0]))
+    target_dir = path.abspath(path.join(path.dirname(filename), freq_dir.split("|")[0]))
     # sort new -> old
     links = list(archives_create_days(target_dir, cfg["pattern"]).values())[::-1]
 
-    for link in links[cfg[ffolder.lower()] :]:  # skip the n most recents
+    for link in links[cfg[freq_dir.lower()] :]:  # skip the n most recents
         filepath = path.realpath(link)
         logger.info("Unlinking %s" % link)
         unlink(link)
-        if _remove and not is_symlinked(filepath, others_ffolders):
+        if _remove and not is_symlinked(filepath, others_freq_dirs):
             if path.isfile(filepath):
                 remove(filepath)
             elif path.isdir(filepath):
@@ -163,6 +162,24 @@ def find_config(filename, cfg=None):
                 return res
 
 
+def cronicle(filenames, _remove=False):
+    for filename in filenames:
+        filename = path.abspath(filename)
+        cfg = find_config(filename)
+        logger.debug("Config is %s" % cfg)
+
+        if not cfg:
+            logger.error(
+                "No pattern found in %s that matches %s." % (CONFIG_PATH, filename)
+            )
+            exit(1)
+        freq_dirs = [x.upper() for x in set(cfg.keys()) - set(["pattern"]) if cfg[x]]
+        for freq_dir in freq_dirs:
+            timed_symlink(filename, freq_dir, cfg)
+        for freq_dir in freq_dirs:
+            rotate(filename, freq_dir, _remove, cfg)
+
+
 @click.command(
     context_settings=dict(help_option_names=["-h", "--help"]),
     help=(
@@ -194,22 +211,7 @@ def cronicle_cli(filenames, _remove, dry_run, verbose):
         globals().update(
             {func: lambda *x: None for func in ("remove", "symlink", "unlink")}
         )
-
-    for filename in filenames:
-        filename = path.abspath(filename)
-        cfg = find_config(filename)
-        logger.debug("Config is %s" % cfg)
-
-        if not cfg:
-            logger.error(
-                "No pattern found in %s that matches %s." % (CONFIG_PATH, filename)
-            )
-            exit(1)
-
-        for ffolder in [x.upper() for x in set(cfg.keys()) - set(["pattern"])]:
-            timed_symlink(filename, ffolder, cfg)
-        for ffolder in [x.upper() for x in set(cfg.keys()) - set(["pattern"])]:
-            rotate(filename, ffolder, _remove, cfg)
+    cronicle(filenames, _remove)
 
 
 if __name__ == "__main__":
