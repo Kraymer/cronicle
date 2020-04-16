@@ -30,10 +30,7 @@ def date_generator():
 def mock_file_create_day(filepath):
     """Interpret date in filename and returns it as creation date.
     """
-    return parser.parse(filepath.split("/")[-1][4:].replace("_", " ")).replace(
-        hour=0, minute=0, second=0, microsecond=0
-    )
-
+    return parser.parse(filepath.split("/")[-1][4:].replace("_", " "))
 
 class ConfigTest(unittest.TestCase):
     def test_find_config_ok(self):
@@ -74,7 +71,7 @@ class Test(unittest.TestCase):
             )
         )
 
-    @mock.patch("cronicle.file_create_day", side_effect=mock_file_create_day)
+    @mock.patch("cronicle.file_create_date", side_effect=mock_file_create_day)
     def test_number_of_archives(self, mock):
         config.add(
             {
