@@ -6,6 +6,7 @@ cronicle.egg-info/
 .direnv
 .envrc
 lib/
+local/
 include/
 test/rsrc/foobar*
 test/rsrc/DAILY/*
