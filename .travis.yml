@@ -1,7 +1,7 @@
 language: python
 
 env:
-  - TOX_ENV=py27
+  - TOX_ENV=py27 COVERAGE=1
 
 before_install:
     - "[ ! -z $COVERAGE ] && travis_retry pip install coveralls || true"
