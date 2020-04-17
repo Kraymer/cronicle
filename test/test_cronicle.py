@@ -57,7 +57,7 @@ class Test(unittest.TestCase):
             any(
                 [
                     os.path.exists(os.path.join(self.rootdir.name, x))
-                    for x in (u"MONTHLY", u"WEEKLY", u"YEARLY")
+                    for x in (u"HOURLY", u"MONTHLY", u"WEEKLY", u"YEARLY")
                 ]
             )
         )
@@ -94,3 +94,10 @@ class Test(unittest.TestCase):
         self.assertEqual(
             set(os.listdir(os.path.join(self.rootdir.name, "HOURLY"))),
             {"foo_2020-02-27_14h", "foo_2020-02-28_09h", "foo_2020-02-28_14h"})
+
+    @mock.patch("cronicle.file_create_date", side_effect=mock_file_create_day)
+    def test_remove(self, mock):
+        config.add({ os.path.join(self.rootdir.name, "foo_*"): {"daily": 3}})
+        files = sorted(glob.glob(os.path.join(self.rootdir.name, "foo_*")))
+        Cronicle(files, remove=True)
+        self.assertEqual(len(os.listdir(os.path.join(self.rootdir.name))), 3)
