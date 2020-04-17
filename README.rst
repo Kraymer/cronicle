@@ -1,5 +1,9 @@
-|travis| 
-|coveralls|
+.. image:: https://img.shields.io/github/v/release/kraymer/cronicle?include_prereleases&style=plastic
+.. image:: https://travis-ci.org/Kraymer/cronicle.svg?branch=master 
+   :target: https://travis-ci.org/Kraymer/cronicle
+.. image:: https://coveralls.io/repos/github/Kraymer/cronicle/badge.svg?branch=master
+   :target: https://coveralls.io/github/Kraymer/cronicle?branch=master
+
 
 cronicle :hourglass\_flowing\_sand::arrows\_counterclockwise::floppy\_disk:
 ===========================================================================
@@ -86,10 +90,7 @@ If used with the ``config.yaml`` as defined in the previous section,
 this daily call to cronicle guarantees that you will keep at most 9
 database dumps (7 latest daily + 2 monthly).
 
-.. |travis| image:: https://travis-ci.org/Kraymer/cronicle.svg?branch=master
-   :target: https://travis-ci.org/Kraymer/cronicle
+
 .. |asciicast| image:: https://asciinema.org/a/155861.png
    :target: https://asciinema.org/a/155861
-.. |coveralls| image:: https://coveralls.io/repos/github/Kraymer/cronicle/badge.svg?branch=master
-   :target: https://coveralls.io/github/Kraymer/cronicle?branch=master
 
