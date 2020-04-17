@@ -8,7 +8,6 @@
 """
 
 import click
-import codecs
 import glob
 import logging
 import os
@@ -19,10 +18,8 @@ from shutil import rmtree
 
 from .config import config, set_logging
 
-with codecs.open(
-    os.path.join(os.path.dirname(__file__), "VERSION"), encoding="utf-8"
-) as _file:
-    __version__ = _file.read().strip()
+
+__version__ = "0.1.0"
 
 logger = logging.getLogger(__name__)
 DEFAULT_CFG = {"daily": 0, "weekly": 0, "monthly": 0, "yearly": 0, "pattern": "*"}

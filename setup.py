@@ -6,7 +6,7 @@
 
 import codecs
 import os
-import time
+import re
 from setuptools import setup
 
 PKG_NAME = "cronicle"
@@ -18,14 +18,16 @@ def read_rsrc(filename):
         return _file.read().strip()
 
 
-VERSION = read_rsrc(os.path.join(PKG_NAME, "VERSION"))
-if VERSION.endswith("dev"):
-    VERSION += str(int(time.time()))
+with codecs.open("cronicle/__init__.py", encoding="utf-8") as fd:
+    version = re.search(
+        r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', fd.read(), re.MULTILINE
+    ).group(1)
+
 
 # Deploy: python3 setup.py sdist bdist_wheel; twine upload --verbose dist/*
 setup(
     name=PKG_NAME,
-    version=VERSION,
+    version=version,
     description="Use cron to rotate backup files!",
     long_description=read_rsrc("README.rst"),
     author="Fabrice Laporte",
