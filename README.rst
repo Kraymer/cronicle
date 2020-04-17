@@ -1,9 +1,11 @@
-.. image:: https://img.shields.io/github/v/release/kraymer/cronicle?include_prereleases&style=plastic
 .. image:: https://travis-ci.org/Kraymer/cronicle.svg?branch=master 
-   :target: https://travis-ci.org/Kraymer/cronicle
+   :target: https://travis-ci.org/Kraymer/cronicle 
+   
 .. image:: https://coveralls.io/repos/github/Kraymer/cronicle/badge.svg?branch=master
    :target: https://coveralls.io/github/Kraymer/cronicle?branch=master
 
+.. image:: https://img.shields.io/github/v/release/kraymer/cronicle.svg
+   :target: https://github.com/Kraymer/cronicle/releases
 
 cronicle :hourglass\_flowing\_sand::arrows\_counterclockwise::floppy\_disk:
 ===========================================================================
