@@ -35,7 +35,7 @@ def mock_file_create_day(filepath):
 
 class Test(unittest.TestCase):
     def setUp(self):
-        config.clear()
+        config.add({"hourly": 0, "daily": 0, "weekly":0, "monthly": 0, "yearly": 0})
         self.rootdir = tempfile.TemporaryDirectory(prefix="cronicle_")
         for date in itertools.islice(date_generator(), 90):
             for hour in (9, 14):
