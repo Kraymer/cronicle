@@ -33,16 +33,6 @@ def mock_file_create_day(filepath):
     return parser.parse(filepath.split("/")[-1][4:].replace("_", " "))
 
 
-class ConfigTest(unittest.TestCase):
-    def test_find_config_ok(self):
-        res = find_config("rsrc/prefix_01_suffix.ext", config)
-        self.assertEqual(res["daily"], 1)
-
-    def test_find_config_ko(self):
-        res = find_config("rsrc/prefix_01_suffix", config)
-        self.assertEqual(res, None)
-
-
 class Test(unittest.TestCase):
     def setUp(self):
         config.clear()
