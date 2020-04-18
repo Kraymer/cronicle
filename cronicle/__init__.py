@@ -167,7 +167,7 @@ class Cronicle:
             if not os.path.exists(target_dir):
                 os.makedirs(target_dir)
             logger.info("Creating symlink %s" % target)
-            os.symlink(filename, target)
+            os.symlink(os.path.relpath(filename), target)
         else:
             logger.error("%s already exists" % target)
             return
