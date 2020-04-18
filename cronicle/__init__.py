@@ -8,9 +8,12 @@
 """
 
 import click
+import copy
 import glob
 import logging
 import os
+import re
+
 from collections import OrderedDict
 import datetime as dt
 from dateutil.relativedelta import relativedelta
@@ -83,26 +86,28 @@ def is_symlinked(filepath, folders):
 
 
 def find_config(filename, cfg=None):
-    """Return the config matched by filename or the default one.
+    """Return the config matched by filename
     """
-    res = DEFAULT_CFG
+    res = copy.deepcopy(DEFAULT_CFG)
     dirname, basename = os.path.split(filename)
 
     if not cfg:
         cfg = config
+
     # Overwrite default config fields with matched config ones
-    for key in cfg.keys():
-        abskey = os.path.join(dirname, key) if not os.path.isabs(key) else key
-        for x in glob.glob(abskey):
-            if x.endswith(filename):
-                cfg = config[key].get()
-                res.update(cfg)
-                for frequency in cfg:
-                    if frequency_folder_days(frequency) is None:
-                        logger.error("Invalid configuration attribute '%s'" % key)
-                        exit(1)
-                res["pattern"] = key
-                return res
+    for pattern in cfg.keys():
+        abspattern = (
+            os.path.join(dirname, pattern) if not os.path.isabs(pattern) else pattern
+        )
+        if re.match(abspattern, filename):
+            pattern_cfg = cfg[pattern] if isinstance(cfg, dict) else cfg[pattern].get()
+            res.update(pattern_cfg)
+            for frequency in pattern_cfg:
+                if frequency_folder_days(frequency) is None:
+                    logger.error("Invalid configuration attribute '%s'" % pattern)
+                    exit(1)
+            res["pattern"] = pattern
+            return res
 
 
 class Cronicle:
