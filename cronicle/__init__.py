@@ -106,9 +106,10 @@ def find_config(filename, cfg=None):
 
 
 class Cronicle:
-    def __init__(self, filenames, remove=False):
+    def __init__(self, filenames, remove=False, config=None):
         for filename in [os.path.abspath(x) for x in filenames]:
-            self.cfg = find_config(filename)
+            self.cfg = find_config(filename, config)
+
             if not self.cfg:
                 logger.error(
                     "No pattern found in %s that matches %s." % (CONFIG_PATH, filename)
@@ -170,6 +171,7 @@ class Cronicle:
     def rotate(self, filename, freq_dir, remove):
         """Keep only the n last links of folder that matches same pattern than filename.
         """
+
         others_freq_dirs = [
             x.split("|")[0].upper() for x in set(self.cfg.keys()) - set([freq_dir])
         ]
