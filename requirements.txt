@@ -1,4 +1,5 @@
 click
+confuse
 mock
 ordereddict
 python-dateutil

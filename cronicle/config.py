@@ -1,7 +1,7 @@
 import logging
-from . import confit
+import confuse
 
-config = confit.LazyConfig("cronicle", __name__)
+config = confuse.Configuration("cronicle", __name__)
 
 
 def set_logging(verbose=False):
