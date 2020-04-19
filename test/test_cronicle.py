@@ -31,12 +31,15 @@ def mock_file_create_day(filepath):
 
 class ConfigTest(unittest.TestCase):
     def test_find_config_ok(self):
+        """Check loading of config when filename matches pattern
+        """
         res = find_config("bar.txt", {"bar*": {"daily": 3}, "foo*": {"weekly": 4}})
         self.assertEqual(
             res, {"daily": 3, "monthly": 0, "pattern": "bar*", "weekly": 0, "yearly": 0}
         )
 
     def test_find_config_ko(self):
+        """Check no config is returned when filename doesn't match any pattern"""
         res = find_config("foo", {"bar*": {"weekly": 3}})
         self.assertEqual(res, None)
 
@@ -47,6 +50,8 @@ class ArchiveTest(unittest.TestCase):
 
     def setUp(self):
         self.rootdir = tempfile.TemporaryDirectory(prefix="cronicle_")
+        self.config = {os.path.join(self.rootdir.name, "foo_*"): {"daily": 3}}
+
         for date in itertools.islice(date_generator(), 90):
             for hour in (9, 14):
                 abspath = os.path.join(
@@ -60,10 +65,7 @@ class ArchiveTest(unittest.TestCase):
 
     def test_archives_folders(self):
         """Check that no empty archive folder is created."""
-        Cronicle(
-            [self.last_file],
-            config={os.path.join(self.rootdir.name, "foo_*"): {"daily": 3}},
-        )
+        Cronicle([self.last_file], config=self.config)
         self.assertTrue(os.path.exists(os.path.join(self.rootdir.name, "DAILY")))
         self.assertFalse(
             any(
@@ -76,6 +78,8 @@ class ArchiveTest(unittest.TestCase):
 
     @mock.patch("cronicle.file_create_date", side_effect=mock_file_create_day)
     def test_number_of_archives(self, mock):
+        """Check number of archives created
+        """
         files = sorted(glob.glob(os.path.join(self.rootdir.name, "foo_*")))
         Cronicle(
             files,
@@ -109,6 +113,20 @@ class ArchiveTest(unittest.TestCase):
             {"foo_2020-02-27_14h", "foo_2020-02-28_09h", "foo_2020-02-28_14h"},
         )
 
+    @mock.patch("cronicle.file_create_date", side_effect=mock_file_create_day)
+    def test_rm_symlink(self, mock):
+        """Check dangling symlinks are removed.
+        """
+        files = sorted(glob.glob(os.path.join(self.rootdir.name, "foo_*")))
+        Cronicle(files[-2:-1], config=self.config)
+        os.remove(files[-2])
+
+        Cronicle(files[-1:], config=self.config)
+        self.assertEqual(
+            set(os.listdir(os.path.join(self.rootdir.name, "DAILY"))),
+            {"foo_2020-02-28_14h",},
+        )
+
 
 class RotateTest(unittest.TestCase):
     """Call cronicle after each file creation and check files rotation.
@@ -116,6 +134,8 @@ class RotateTest(unittest.TestCase):
 
     @mock.patch("cronicle.file_create_date", side_effect=mock_file_create_day)
     def test_remove(self, mock):
+        """Check only the number of files specified in config are kept
+        """
         self.rootdir = tempfile.TemporaryDirectory(prefix="cronicle_")
 
         for date in itertools.islice(date_generator(), 30):

@@ -63,14 +63,21 @@ def file_create_date(filepath):
 
 
 def archives_create_dates(folder, pattern="*"):
-    """Return OrderedDict of archives symlinks sorted by creation dates (used as keys).
+    """Return OrderedDict of valid archives symlinks sorted by creation dates (used as keys).
     """
     creation_dates = {}
 
     abs_pattern = os.path.join(folder, os.path.basename(pattern))
-    for x in glob.glob(abs_pattern):
-        if os.path.islink(x):
-            creation_dates[file_create_date(x)] = x
+    for filepath in glob.glob(abs_pattern):
+        if os.path.islink(filepath):
+            if os.path.exists(filepath):
+                creation_dates[file_create_date(filepath)] = filepath
+            else:
+                logger.info(
+                    "No source file found at %s, deleting obsolete symlink %s."
+                    % (os.path.realpath(filepath), filepath)
+                )
+                os.unlink(filepath)
     return OrderedDict(sorted(creation_dates.items()))
 
 
