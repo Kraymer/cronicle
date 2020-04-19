@@ -110,6 +110,14 @@ def find_config(filename, cfg=None):
             return res
 
 
+def last_archive_date(filename, folder, pattern):
+    """Return last archive date for given folder
+    """
+    archives = archives_create_dates(folder, pattern)
+    if archives:
+        return list(archives.keys())[-1]
+
+
 class Cronicle:
     def __init__(self, filenames, remove=False, config=None):
         for filename in [os.path.abspath(x) for x in filenames]:
@@ -130,22 +138,17 @@ class Cronicle:
             for freq_dir in freq_dirs:
                 self.rotate(filename, freq_dir, remove)
 
-    def last_archive_date(self, filename, folder):
-        """Return last archive date for given folder
-        """
-        archives = archives_create_dates(folder, self.cfg["pattern"])
-        if archives:
-            return list(archives.keys())[-1]
-
     def is_spaced_enough(self, filename, target_dir):
         """Return True if enough time elapsed between last archive
            and filename creation dates according to target_dir frequency.
         """
         file_date = file_create_date(filename)
-        last_archive_date = self.last_archive_date(filename, target_dir)
+        _last_archive_date = last_archive_date(
+            filename, target_dir, self.cfg["pattern"]
+        )
 
-        if last_archive_date:
-            delta = relativedelta(file_date, last_archive_date)
+        if _last_archive_date:
+            delta = relativedelta(file_date, _last_archive_date)
             delta_unit, delta_min = frequency_folder_days(target_dir)
             return getattr(delta, delta_unit) >= delta_min
 
