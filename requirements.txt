@@ -1,8 +1,6 @@
 click
 confuse
-mock
 ordereddict
 python-dateutil
 pyyaml
 six
-tox

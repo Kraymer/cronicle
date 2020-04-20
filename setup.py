@@ -36,8 +36,9 @@ setup(
     license="MIT",
     platforms="ALL",
     packages=["cronicle",],
-    entry_points={"console_scripts": ["cronicle = cronicle:cronicle_cli",],},
+    entry_points={"console_scripts": ["cronicle = cronicle:cronicle_cli"]},
     install_requires=read_rsrc("requirements.txt").split("\n"),
+    extras_require={"test": ["coverage>=5,<6", "nose>1.3", "mock==4.0.2", "tox>=3",]},
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
