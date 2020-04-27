@@ -12,7 +12,6 @@ import copy
 import glob
 import logging
 import os
-import re
 
 from collections import OrderedDict
 import datetime as dt
@@ -97,16 +96,17 @@ def find_config(filename, cfg=None):
     """
     res = copy.deepcopy(DEFAULT_CFG)
     dirname, basename = os.path.split(filename)
-
+ 
     if not cfg:
         cfg = config
-
     # Overwrite default config fields with matched config ones
     for pattern in cfg.keys():
         abspattern = (
             os.path.join(dirname, pattern) if not os.path.isabs(pattern) else pattern
         )
-        if re.match(abspattern, filename):
+        for x in glob.glob(abspattern):
+            if not x.endswith(filename):
+                continue
             pattern_cfg = cfg[pattern] if isinstance(cfg, dict) else cfg[pattern].get()
             res.update(pattern_cfg)
             for frequency in pattern_cfg:
@@ -153,7 +153,6 @@ class Cronicle:
         _last_archive_date = last_archive_date(
             filename, target_dir, self.cfg["pattern"]
         )
-
         if _last_archive_date:
             delta = relativedelta(file_date, _last_archive_date)
             delta_unit, delta_min = frequency_folder_days(target_dir)
