@@ -30,12 +30,31 @@ def mock_file_create_day(filepath):
 
 
 class ConfigTest(unittest.TestCase):
+    def setUp(self):
+        self.rootdir = tempfile.TemporaryDirectory(prefix="cronicle_")
+        self.barfile = os.path.join(self.rootdir.name, "bar.txt")
+        with open(self.barfile, "w"):
+            pass
+
     def test_find_config_ok(self):
         """Check loading of config when filename matches pattern
         """
-        res = find_config("bar.txt", {"bar*": {"daily": 3}, "foo*": {"weekly": 4}})
+        res = find_config(
+            self.barfile,
+            {
+                os.path.join(self.rootdir.name, "bar*"): {"daily": 3},
+                "foo*": {"weekly": 4},
+            },
+        )
         self.assertEqual(
-            res, {"daily": 3, "monthly": 0, "pattern": "bar*", "weekly": 0, "yearly": 0}
+            res,
+            {
+                "daily": 3,
+                "monthly": 0,
+                "pattern": os.path.join(self.rootdir.name, "bar*"),
+                "weekly": 0,
+                "yearly": 0,
+            },
         )
 
     def test_find_config_ko(self):

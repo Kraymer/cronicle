@@ -96,7 +96,7 @@ def find_config(filename, cfg=None):
     """
     res = copy.deepcopy(DEFAULT_CFG)
     dirname, basename = os.path.split(filename)
- 
+
     if not cfg:
         cfg = config
     # Overwrite default config fields with matched config ones
