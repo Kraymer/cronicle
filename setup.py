@@ -8,6 +8,7 @@ import codecs
 import os
 import re
 import sys
+import time
 from setuptools import setup
 
 try:
@@ -24,14 +25,14 @@ DIRPATH = os.path.dirname(__file__)
 
 def read_rsrc(filename):
     with codecs.open(os.path.join(DIRPATH, filename), encoding="utf-8") as _file:
-        return _file.read().strip()
+        return re.sub(r":(\w+\\?)+:", u"", _file.read().strip())  # no emoji
 
 
 with codecs.open("cronicle/__init__.py", encoding="utf-8") as fd:
     version = re.search(
         r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', fd.read(), re.MULTILINE
     ).group(1)
-
+    version = version.replace("dev", str(int(time.time())))
 
 # Deploy: python3 setup.py sdist bdist_wheel; twine upload --verbose dist/*
 setup(
