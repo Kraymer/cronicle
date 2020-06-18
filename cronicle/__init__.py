@@ -24,6 +24,7 @@ from .config import config, set_logging
 __version__ = "0.3.0"
 
 logger = logging.getLogger(__name__)
+# Periodic delays for a given pattern
 DEFAULT_CFG = {"daily": 0, "weekly": 0, "monthly": 0, "yearly": 0, "pattern": "*"}
 set_logging()
 
@@ -91,25 +92,25 @@ def is_symlinked(filepath, folders):
     return False
 
 
-def find_config(filename, cfg=None):
+def find_config(filename, path_cfg=None):
     """Return the config matched by filename
     """
     res = copy.deepcopy(DEFAULT_CFG)
     dirname, basename = os.path.split(filename)
- 
-    if not cfg:
-        cfg = config
+
+    if not path_cfg:
+        path_cfg = config
     # Overwrite default config fields with matched config ones
-    for pattern in cfg.keys():
+    for pattern in path_cfg.keys():
         abspattern = (
             os.path.join(dirname, pattern) if not os.path.isabs(pattern) else pattern
         )
         for x in glob.glob(abspattern):
             if not x.endswith(filename):
                 continue
-            pattern_cfg = cfg[pattern] if isinstance(cfg, dict) else cfg[pattern].get()
-            res.update(pattern_cfg)
-            for frequency in pattern_cfg:
+            found_cfg = path_cfg[pattern] if isinstance(path_cfg, dict) else path_cfg[pattern].get()
+            res.update(found_cfg)
+            for frequency in found_cfg:
                 if frequency_folder_days(frequency) is None:
                     logger.error("Invalid configuration attribute '%s'" % pattern)
                     exit(1)
@@ -128,7 +129,7 @@ def last_archive_date(filename, folder, pattern):
 class Cronicle:
     def __init__(self, filenames, remove=False, config=None):
         for filename in [os.path.abspath(x) for x in filenames]:
-            self.cfg = find_config(filename, config)
+            self.cfg = find_config(filename, config["paths"])
 
             if not self.cfg:
                 logger.error(
