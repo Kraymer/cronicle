@@ -6,9 +6,6 @@
 
 .. image:: https://img.shields.io/github/v/release/kraymer/cronicle.svg
    :target: https://github.com/Kraymer/cronicle/releases
-   
-.. image:: https://img.shields.io/badge/-%E2%99%A1%20Donate%20-ff69b4
-   :target: https://www.patreon.com/kraymer
 
 cronicle :hourglass\_flowing\_sand::arrows\_counterclockwise::floppy\_disk:
 ===========================================================================
