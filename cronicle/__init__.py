@@ -39,8 +39,7 @@ CONFIG_PATH = os.path.join(config.config_dir(), "config.yaml")
 
 
 def frequency_folder_days(freq_dir):
-    """Return minimum delta between 2 archives inside given folder
-    """
+    """Return minimum delta between 2 archives inside given folder"""
     try:
         return FREQUENCY_FOLDER_DAYS[os.path.basename(freq_dir).upper()]
     except KeyError:
@@ -52,8 +51,7 @@ def frequency_folder_days(freq_dir):
 
 
 def file_create_date(filepath):
-    """Return file creation date with a daily precision.
-    """
+    """Return file creation date with a daily precision."""
     try:
         filedate = os.lstat(os.path.realpath(filepath)).st_birthtime
     except AttributeError:
@@ -62,8 +60,7 @@ def file_create_date(filepath):
 
 
 def archives_create_dates(folder, pattern="*"):
-    """Return OrderedDict of valid archives symlinks sorted by creation dates (used as keys).
-    """
+    """Return OrderedDict of valid archives symlinks sorted by creation dates (used as keys)."""
     creation_dates = {}
 
     abs_pattern = os.path.join(folder, os.path.basename(pattern))
@@ -81,8 +78,7 @@ def archives_create_dates(folder, pattern="*"):
 
 
 def is_symlinked(filepath, folders):
-    """Return True if filepath has symlinks pointing to it in given folders.
-    """
+    """Return True if filepath has symlinks pointing to it in given folders."""
     dirname, basename = os.path.split(filepath)
     for folder in folders:
         target = os.path.abspath(os.path.join(dirname, folder, basename))
@@ -92,8 +88,7 @@ def is_symlinked(filepath, folders):
 
 
 def find_config(filename, cfg=None):
-    """Return the config matched by filename
-    """
+    """Return the config matched by filename"""
     res = copy.deepcopy(DEFAULT_CFG)
     dirname, basename = os.path.split(filename)
 
@@ -118,8 +113,7 @@ def find_config(filename, cfg=None):
 
 
 def last_archive_date(filename, folder, pattern):
-    """Return last archive date for given folder
-    """
+    """Return last archive date for given folder"""
     archives = archives_create_dates(folder, pattern)
     if archives:
         return list(archives.keys())[-1]
@@ -147,7 +141,7 @@ class Cronicle:
 
     def is_spaced_enough(self, filename, target_dir):
         """Return True if enough time elapsed between last archive
-           and filename creation dates according to target_dir frequency.
+        and filename creation dates according to target_dir frequency.
         """
         file_date = file_create_date(filename)
         _last_archive_date = last_archive_date(
@@ -162,7 +156,7 @@ class Cronicle:
 
     def timed_symlink(self, filename, freq_dir):
         """Create symlink for filename in freq_dir if enough days elapsed since last archive.
-           Return True if symlink created.
+        Return True if symlink created.
         """
         target_dir = os.path.abspath(
             os.path.join(os.path.dirname(filename), freq_dir.split("|")[0])
@@ -183,8 +177,7 @@ class Cronicle:
         return True
 
     def rotate(self, filename, freq_dir, remove):
-        """Keep only the n last links of folder that matches same pattern than filename.
-        """
+        """Keep only the n last links of folder that matches same pattern than filename."""
 
         others_freq_dirs = [
             x.split("|")[0].upper() for x in set(self.cfg.keys()) - set([freq_dir])
