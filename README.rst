@@ -1,4 +1,4 @@
-.. image:: https://github.com/kraymer/cronicle/workflows/build/badge.svg
+.. image:: http://github.com/kraymer/cronicle/workflows/build/badge.svg
    :target: https://github.com/kraymer/cronicle/actions 
    
 .. image:: https://coveralls.io/repos/github/Kraymer/cronicle/badge.svg?branch=master
@@ -93,6 +93,6 @@ this daily call to cronicle guarantees that you will keep at most 9
 database dumps (7 latest daily + 2 monthly).
 
 
-.. |asciicast| image:: https://asciinema.org/a/155861.png
+.. |asciicast| image:: http://asciinema.org/a/155861.png
    :target: https://asciinema.org/a/155861
 
