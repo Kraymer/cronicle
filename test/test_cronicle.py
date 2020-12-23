@@ -28,12 +28,15 @@ def mock_file_create_day(filepath):
     return parser.parse(filepath.split("/")[-1][4:].replace("_", " "))
 
 
+def create_empty_file(path):
+    with open(path, "w"):
+        pass
+
 class ConfigTest(unittest.TestCase):
     def setUp(self):
         self.rootdir = tempfile.TemporaryDirectory(prefix="cronicle_")
         self.barfile = os.path.join(self.rootdir.name, "bar.txt")
-        with open(self.barfile, "w"):
-            pass
+        create_empty_file(self.barfile)
 
     def test_find_config_ok(self):
         """Check loading of config when filename matches pattern"""
@@ -73,11 +76,16 @@ class ArchiveTest(unittest.TestCase):
                 abspath = os.path.join(
                     self.rootdir.name, "foo_{}_{:02d}h".format(str(date), hour)
                 )
-                with open(abspath, "w"):
-                    pass
-        print(abspath)
-
+                create_empty_file(abspath)
         self.last_file = abspath
+
+    def test_dry_run(self):
+        """Check filesystem is unmodified when dry-run is used"""
+        archive = os.path.join(self.rootdir.name, "DAILY", os.path.basename(self.last_file))
+        Cronicle([self.last_file], dry_run=True, config=self.config)
+        self.assertFalse(os.path.exists(archive))
+        Cronicle([self.last_file], dry_run=False, config=self.config)
+        self.assertTrue(os.path.exists(archive))
 
     def test_archives_folders(self):
         """Check that no empty archive folder is created."""
