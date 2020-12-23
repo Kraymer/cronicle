@@ -24,7 +24,7 @@ from shutil import rmtree
 from .config import config
 
 
-__version__ = "0.3.1"
+__version__ = "0.4.0"
 
 logger = logging.getLogger(__name__)
 click_log.basic_config(logger)
