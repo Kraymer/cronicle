@@ -1,14 +1,18 @@
 #!/usr/bin/env python
 
-import itertools
-import os
-import tempfile
-import unittest
 import datetime as dt
 import glob
+import itertools
 import mock
-from dateutil import parser
+import os
+import unittest
 
+from dateutil import parser
+try:
+    from backports import tempfile
+except ModuleNotFoundError:
+    import tempfile
+    
 from cronicle import Cronicle, find_config, exclude_frequency_folders
 
 
