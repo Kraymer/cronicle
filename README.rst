@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/Kraymer/cronicle.svg?branch=master 
-   :target: https://travis-ci.org/Kraymer/cronicle 
+.. image:: https://github.com/kraymer/cronicle/workflows/Python%20package/badge.svg
+   :target: https://github.com/kraymer/cronicle/actions 
    
 .. image:: https://coveralls.io/repos/github/Kraymer/cronicle/badge.svg?branch=master
    :target: https://coveralls.io/github/Kraymer/cronicle?branch=master
