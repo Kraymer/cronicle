@@ -242,7 +242,7 @@ class Cronicle:
         " the patterns present in %s." % CONFIG_PATH
     ),
     epilog=(
-        "See https://github.com/Kraymer/cronicle/blob/master/README.md#usage for "
+        "See https://github.com/Kraymer/cronicle/#usage for "
         "more infos"
     ),
 )
