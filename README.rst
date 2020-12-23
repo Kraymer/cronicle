@@ -1,4 +1,4 @@
-.. image:: https://github.com/kraymer/cronicle/workflows/Python%20package/badge.svg
+.. image:: https://github.com/kraymer/cronicle/workflows/Build/badge.svg
    :target: https://github.com/kraymer/cronicle/actions 
    
 .. image:: https://coveralls.io/repos/github/Kraymer/cronicle/badge.svg?branch=master
