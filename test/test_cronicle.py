@@ -10,9 +10,9 @@ import unittest
 from dateutil import parser
 try:
     from backports import tempfile
-except ModuleNotFoundError:
+except Exception:
     import tempfile
-    
+
 from cronicle import Cronicle, find_config, exclude_frequency_folders
 
 
@@ -35,6 +35,7 @@ def mock_file_create_day(filepath):
 def create_empty_file(path):
     with open(path, "w"):
         pass
+
 
 class ConfigTest(unittest.TestCase):
     def setUp(self):
@@ -72,6 +73,7 @@ class ConfigTest(unittest.TestCase):
         """
         lst = ["/tmp/FOO", "/tmp/DAILY", "/tmp/BIDAILY"]
         self.assertEqual(exclude_frequency_folders(lst), ["/tmp/FOO", "/tmp/BIDAILY"])
+
 
 class ArchiveTest(unittest.TestCase):
     """Create set of files to archive beforehand, call cronicle and check symlinks created."""
