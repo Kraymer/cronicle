@@ -173,6 +173,7 @@ class Cronicle:
                         % (os.path.realpath(filepath), filepath)
                     )
                     self.unlink(filepath)
+        logger.debug("Archives dates: {}".format(creation_dates))
         return OrderedDict(sorted(creation_dates.items()))
 
     def is_spaced_enough(self, filename, target_dir):
@@ -183,8 +184,11 @@ class Cronicle:
         _last_archive_date = self.last_archive_date(
             filename, target_dir, self.cfg["pattern"]
         )
+        logger.debug("File {} created at {}".format(filename, file_date))
         if _last_archive_date:
             delta = relativedelta(file_date, _last_archive_date)
+            logger.debug("Delta between {} and {}: {}".format(
+                file_date, _last_archive_date, delta))
             delta_unit, delta_min = frequency_folder_days(target_dir)
             return getattr(delta, delta_unit) >= delta_min
 
