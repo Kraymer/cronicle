@@ -41,6 +41,12 @@ FREQUENCY_FOLDER_DAYS = {
 CONFIG_PATH = os.path.join(config.config_dir(), "config.yaml")
 
 
+def exclude_frequency_folders(lst):
+    """Exclude folders whose name matches one of the frequency folders
+    """
+    return [x for x in lst if os.path.basename(x) not in FREQUENCY_FOLDER_DAYS]
+
+
 def frequency_folder_days(freq_dir):
     """Return minimum delta between 2 archives inside given folder"""
     try:

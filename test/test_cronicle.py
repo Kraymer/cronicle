@@ -9,7 +9,7 @@ import glob
 import mock
 from dateutil import parser
 
-from cronicle import Cronicle, find_config
+from cronicle import Cronicle, find_config, exclude_frequency_folders
 
 
 NOOP_CONFIG = {"hourly": 0, "daily": 0, "weekly": 0, "monthly": 0, "yearly": 0}
@@ -63,6 +63,11 @@ class ConfigTest(unittest.TestCase):
         res = find_config("foo", {"bar*": {"weekly": 3}})
         self.assertEqual(res, None)
 
+    def test_exclude_frequency_folders(self):
+        """Check frequency folders are correctly excluded fromfilenames to consider to archive
+        """
+        lst = ["/tmp/FOO", "/tmp/DAILY", "/tmp/BIDAILY"]
+        self.assertEqual(exclude_frequency_folders(lst), ["/tmp/FOO", "/tmp/BIDAILY"])
 
 class ArchiveTest(unittest.TestCase):
     """Create set of files to archive beforehand, call cronicle and check symlinks created."""
