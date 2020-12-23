@@ -98,8 +98,9 @@ def find_config(filename, cfg=None):
 
 
 class Cronicle:
-    def __init__(self, filenames, remove=False, config=None):
+    def __init__(self, filenames, remove=False, dry_run=False, config=None):
         for filename in [os.path.abspath(x) for x in filenames]:
+            self.dry_run = dry_run
             self.cfg = find_config(filename, config)
 
             if not self.cfg:
@@ -117,6 +118,33 @@ class Cronicle:
             for freq_dir in freq_dirs:
                 self.rotate(filename, freq_dir, remove)
 
+    def remove(self, path):
+        if self.dry_run:
+            logger.info("dry-run mode disabling removal of {}".format(path))
+        else:
+            logger.info("Removing {}".format(path))
+            os.remove(path)
+
+    def symlink(self, src, dst):
+        if self.dry_run:
+            logger.info("dry-run mode disabling symlink of {}->{}".format(dst, src))
+        else:
+            logger.info("Creating symlink %s" % dst)
+            os.symlink(src, dst)
+
+    def unlink(self, path):
+        if self.dry_run:
+            logger.info("dry-run mode disabling unlink of {}".format(path))
+        else:
+            logger.info("Unlinking %s" % path)
+            os.unlink(path)
+
+    def rmtree(self, path):
+        if self.dry_run:
+            logger.info("dry-run mode disabling rmtree of {}".format(path))
+        else:
+            logger.info("Removing {}".format(path))
+            rmtree(path)
 
     def last_archive_date(self, filename, folder, pattern):
         """Return last archive date for given folder"""
@@ -165,16 +193,15 @@ class Cronicle:
         )
 
         if not self.is_spaced_enough(filename, target_dir):
-            logger.info("No symlink created : too short delay since last archive")
+            logger.warning("{}: No {} symlink created, too short delay since last archive".format(filename, freq_dir))
             return
         target = os.path.join(target_dir, os.path.basename(filename))
         if not os.path.lexists(target):
             if not os.path.exists(target_dir):
                 os.makedirs(target_dir)
-            logger.info("Creating symlink %s" % target)
-            os.symlink(os.path.relpath(filename, start=target_dir), target)
+            self.symlink(os.path.relpath(filename, start=target_dir), target)
         else:
-            logger.error("%s already exists" % target)
+            logger.error("{}: already exists".format(target))
             return
         return True
 
@@ -194,13 +221,12 @@ class Cronicle:
 
         for link in links[self.cfg[freq_dir.lower()] :]:  # skip the n most recents
             filepath = os.path.realpath(link)
-            logger.info("Unlinking %s" % link)
-            os.unlink(link)
+            self.unlink(link)
             if remove and not is_symlinked(filepath, others_freq_dirs):
                 if os.path.isfile(filepath):
-                    os.remove(filepath)
+                    self.remove(filepath)
                 elif os.path.isdir(filepath):
-                    rmtree(filepath)
+                    self.rmtree(filepath)
 
 
 @click.command(
@@ -228,11 +254,8 @@ class Cronicle:
 )
 @click_log.simple_verbosity_option(logger)
 @click.version_option(__version__)
-    if dry_run:  # disable functions performing filesystem operations
-        globals().update(
-            {func: lambda *x: None for func in ("remove", "symlink", "unlink")}
-        )
-    Cronicle(filenames, remove)
+def cronicle_cli(filenames, remove, dry_run):
+    Cronicle(exclude_frequency_folders(filenames), remove, dry_run)
 
 
 if __name__ == "__main__":
