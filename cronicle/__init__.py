@@ -59,24 +59,6 @@ def file_create_date(filepath):
     return dt.date.fromtimestamp(filedate)
 
 
-def archives_create_dates(folder, pattern="*"):
-    """Return OrderedDict of valid archives symlinks sorted by creation dates (used as keys)."""
-    creation_dates = {}
-
-    abs_pattern = os.path.join(folder, os.path.basename(pattern))
-    for filepath in glob.glob(abs_pattern):
-        if os.path.islink(filepath):
-            if os.path.exists(filepath):
-                creation_dates[file_create_date(filepath)] = filepath
-            else:
-                logger.info(
-                    "No source file found at %s, deleting obsolete symlink %s."
-                    % (os.path.realpath(filepath), filepath)
-                )
-                os.unlink(filepath)
-    return OrderedDict(sorted(creation_dates.items()))
-
-
 def is_symlinked(filepath, folders):
     """Return True if filepath has symlinks pointing to it in given folders."""
     dirname, basename = os.path.split(filepath)
@@ -112,13 +94,6 @@ def find_config(filename, cfg=None):
             return res
 
 
-def last_archive_date(filename, folder, pattern):
-    """Return last archive date for given folder"""
-    archives = archives_create_dates(folder, pattern)
-    if archives:
-        return list(archives.keys())[-1]
-
-
 class Cronicle:
     def __init__(self, filenames, remove=False, config=None):
         for filename in [os.path.abspath(x) for x in filenames]:
@@ -139,12 +114,36 @@ class Cronicle:
             for freq_dir in freq_dirs:
                 self.rotate(filename, freq_dir, remove)
 
+
+    def last_archive_date(self, filename, folder, pattern):
+        """Return last archive date for given folder"""
+        archives = self.archives_create_dates(folder, pattern)
+        if archives:
+            return list(archives.keys())[-1]
+
+    def archives_create_dates(self, folder, pattern="*"):
+        """Return OrderedDict of valid archives symlinks sorted by creation dates (used as keys)."""
+        creation_dates = {}
+
+        abs_pattern = os.path.join(folder, os.path.basename(pattern))
+        for filepath in glob.glob(abs_pattern):
+            if os.path.islink(filepath):
+                if os.path.exists(filepath):
+                    creation_dates[file_create_date(filepath)] = filepath
+                else:
+                    logger.info(
+                        "No source file found at %s, deleting obsolete symlink %s."
+                        % (os.path.realpath(filepath), filepath)
+                    )
+                    self.unlink(filepath)
+        return OrderedDict(sorted(creation_dates.items()))
+
     def is_spaced_enough(self, filename, target_dir):
         """Return True if enough time elapsed between last archive
         and filename creation dates according to target_dir frequency.
         """
         file_date = file_create_date(filename)
-        _last_archive_date = last_archive_date(
+        _last_archive_date = self.last_archive_date(
             filename, target_dir, self.cfg["pattern"]
         )
         if _last_archive_date:
@@ -186,7 +185,7 @@ class Cronicle:
             os.path.join(os.path.dirname(filename), freq_dir.split("|")[0])
         )
         # sort new -> old
-        links = list(archives_create_dates(target_dir, self.cfg["pattern"]).values())[
+        links = list(self.archives_create_dates(target_dir, self.cfg["pattern"]).values())[
             ::-1
         ]
 
