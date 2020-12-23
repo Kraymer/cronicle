@@ -7,25 +7,27 @@
 """Use cron to rotate backup files!
 """
 
-import click
 import copy
 import glob
 import logging
 import os
 
 from collections import OrderedDict
+import click
+import click_log
 import datetime as dt
 from dateutil.relativedelta import relativedelta
 from shutil import rmtree
 
-from .config import config, set_logging
+
+from .config import config
 
 
 __version__ = "0.3.1"
 
 logger = logging.getLogger(__name__)
+click_log.basic_config(logger)
 DEFAULT_CFG = {"daily": 0, "weekly": 0, "monthly": 0, "yearly": 0, "pattern": "*"}
-set_logging()
 
 # Names of frequency folders that will host symlinks, and minimum delta elapsed between 2 archives
 FREQUENCY_FOLDER_DAYS = {
@@ -223,10 +225,8 @@ class Cronicle:
 @click.option(
     "-d", "--dry-run", count=True, help="Just print instead of writing on filesystem."
 )
-@click.option("-v", "--verbose", count=True)
+@click_log.simple_verbosity_option(logger)
 @click.version_option(__version__)
-def cronicle_cli(filenames, remove, dry_run, verbose):
-    set_logging(max(verbose, dry_run))
     if dry_run:  # disable functions performing filesystem operations
         globals().update(
             {func: lambda *x: None for func in ("remove", "symlink", "unlink")}
