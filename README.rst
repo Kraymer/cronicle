@@ -75,7 +75,7 @@ cronicle is written for `Python
 X.
 
 Install with `pip <https://pip.pypa.io/en/stable/>`__ via
-``pip install git+https://github.com/Kraymer/cronicle.git`` command.
+``pip install cronicle`` command.
 
 ``cron`` triggering
 -------------------
