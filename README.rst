@@ -1,11 +1,11 @@
 .. image:: http://github.com/kraymer/cronicle/workflows/build/badge.svg
    :target: https://github.com/kraymer/cronicle/actions 
-   
-
 .. image:: https://codecov.io/gh/Kraymer/cronicle/branch/master/graph/badge.svg?token=eku8LDViVP
    :target: https://codecov.io/gh/Kraymer/cronicle
-    
-
+.. image:: https://img.shields.io/github/v/release/kraymer/cronicle.svg
+   :target: https://github.com/Kraymer/cronicle/releases
+.. image:: https://pepy.tech/badge/cronicle 
+   :target: https://pepy.tech/project/cronicle
 .. image:: https://img.shields.io/github/v/release/kraymer/cronicle.svg
    :target: https://github.com/Kraymer/cronicle/releases
 
