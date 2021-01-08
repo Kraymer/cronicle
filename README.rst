@@ -6,8 +6,6 @@
    :target: https://github.com/Kraymer/cronicle/releases
 .. image:: https://pepy.tech/badge/cronicle 
    :target: https://pepy.tech/project/cronicle
-.. image:: https://img.shields.io/github/v/release/kraymer/cronicle.svg
-   :target: https://github.com/Kraymer/cronicle/releases
 
 cronicle :hourglass\_flowing\_sand::arrows\_counterclockwise::floppy\_disk:
 ===========================================================================
