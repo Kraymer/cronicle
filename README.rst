@@ -93,6 +93,6 @@ this daily call to cronicle guarantees that you will keep at most 9
 database dumps (7 latest daily + 2 monthly).
 
 
-.. |asciicast| image:: http://raw.githubusercontent.com/Kraymer/public/master/cronicle/cronicle_screenshot.png
+.. |asciicast| image:: https://raw.githubusercontent.com/Kraymer/cronicle/master/docs/cronicle_screenshot.png
    :target: https://asciinema.org/a/155861
 
