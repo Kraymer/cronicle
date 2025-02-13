@@ -1,14 +1,13 @@
 FROM python:3.7-alpine
 
-RUN mkdir -p /cronicle/cronicle
-
-COPY requirements.txt /cronicle
-RUN pip install --requirement /cronicle/requirements.txt
-
-COPY cronicle /cronicle/cronicle
-COPY *.py README.md /cronicle/
-
 WORKDIR /cronicle
+
+COPY requirements.txt ./
+RUN pip install --requirement requirements.txt
+
+COPY ./cronicle ./cronicle
+COPY *.py README.rst ./
+
 RUN python3 setup.py install
 
 ENTRYPOINT ["cronicle"]
